@@ -7,7 +7,7 @@ app.directive('learnEs6Wrapper', function() {
         },
         controller: LearnEs6WrapperCtrl,
         controllerAs: 'wrapperCtrl',
-        templateUrl: 'http://robianmcd.github.io/learn-es-6/src/directives/learnEs6Wrapper.html'
+        templateUrl: 'http://robianmcd.github.io/learn-es6/src/directives/learnEs6Wrapper.html'
     }
 });
 

@@ -7,7 +7,7 @@ var jsEs6Files = 'src/**/challenge.js';
 var jsEs5Files = ['src/**/*.js', '!' + jsEs6Files];
 var htmlFiles = 'src/**/*.html';
 
-var publicSrcUrl = 'http://robianmcd.github.io/learn-es-6/src/';
+var publicSrcUrl = 'http://robianmcd.github.io/learn-es6/src/';
 
 gulp.task('buildHtml', function() {
     gulp.src(htmlFiles)
