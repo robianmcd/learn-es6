@@ -1,4 +1,4 @@
-var app = angular.module('learnEs6', ['learnEs6.helper']);
+var app = angular.module('learnEs6.setup', ['learnEs6']);
 
 var SetupCtrl = function($injector) {
     var _this = this;
