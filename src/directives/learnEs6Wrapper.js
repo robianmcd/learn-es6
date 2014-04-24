@@ -69,6 +69,8 @@ app.directive('learnEs6Wrapper', function() {
                                     </div>\
                                     <!--Bootstrap has issues with col-xs-1 columns so we need to make this one 10 instead of 11: http://stackoverflow.com/questions/18365908/bootstrap-3-column-wraps-in-portrait-view-only-->\
                                     <div class="col-xs-10">\
+                                        <!--The margins on top of a media entry are only applied if they are not a first child. This makes sure that only the first media entry is a first child-->\
+                                        <div ng-if="$index !== 0"></div>\
                                         <div class="media">\
                                             <a class="pull-left" href="">\
                                                 <img class="media-object" src="{{userData.profile.pic}}" width="60px" alt="Profile Picture">\
@@ -204,8 +206,6 @@ LearnEs6WrapperCtrl.prototype.getLastCompletedChallengeFromUserData = function(u
 };
 
 
-
-
 //taken from http://stackoverflow.com/a/3177838/373655
 LearnEs6WrapperCtrl.prototype.timeSince = function(date) {
     if (typeof date === 'string') {
@@ -216,23 +216,23 @@ LearnEs6WrapperCtrl.prototype.timeSince = function(date) {
 
     var interval = Math.floor(seconds / 31536000);
 
-    if (interval > 1) {
+    if (interval >= 1) {
         return interval + " years";
     }
     interval = Math.floor(seconds / 2592000);
-    if (interval > 1) {
+    if (interval >= 1) {
         return interval + " months";
     }
     interval = Math.floor(seconds / 86400);
-    if (interval > 1) {
+    if (interval >= 1) {
         return interval + " days";
     }
     interval = Math.floor(seconds / 3600);
-    if (interval > 1) {
+    if (interval >= 1) {
         return interval + " hours";
     }
     interval = Math.floor(seconds / 60);
-    if (interval > 1) {
+    if (interval >= 1) {
         return interval + " minutes";
     }
     return Math.floor(seconds) + " seconds";
