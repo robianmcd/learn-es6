@@ -8,24 +8,24 @@ var jsChallengeFiles = 'src/challenges/**/*.js';
 var jsAppFiles = ['src/**/*.js', '!' + jsChallengeFiles, '!src/app.concat.js'];
 var htmlFiles = 'src/**/*.html';
 
-var publicSrcUrl = 'http://robianmcd.github.io/learn-es6/src/';
+var publicSrcUrl = 'http://robianmcd.github.io/the-sandbox-challenge/src/';
 
 gulp.task('buildHtml', function() {
     gulp.src(htmlFiles)
-        .pipe(replace(publicSrcUrl, '../../'))
+        .pipe(replace(publicSrcUrl, '../../../'))
         .pipe(replace('</body>', '<script src="challenge.js"></script>\n</body>'))
         .pipe(gulp.dest('dist'));
 });
 
 gulp.task('buildJs', function() {
     gulp.src(jsAppFiles)
-        .pipe(replace(publicSrcUrl, '../../'))
+        .pipe(replace(publicSrcUrl, '../../../'))
         .pipe(concat('app.concat.js'))
         .pipe(gulp.dest('src'))
         .pipe(gulp.dest('dist'));
 
     gulp.src(jsChallengeFiles)
-        .pipe(replace(publicSrcUrl, '../../'))
+        .pipe(replace(publicSrcUrl, '../../../'))
         .pipe(traceur({sourceMaps: true, experimental: true}))
         .pipe(gulp.dest('dist/challenges'));
 });

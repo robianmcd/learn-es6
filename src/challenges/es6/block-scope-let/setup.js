@@ -1,4 +1,4 @@
-var app = angular.module('learnEs6.setup', ['learnEs6']);
+var app = angular.module('theSandboxChallenge.setup', ['theSandboxChallenge']);
 
 var SetupCtrl = function($injector) {
     var _this = this;

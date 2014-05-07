@@ -1,9 +1,9 @@
 (function() {
 
-    var app = angular.module('learnEs6');
+    var app = angular.module('theSandboxChallenge');
 
     //language=HTML
-    var learnEs6Html = '\
+    var sandboxChallengeHtml = '\
         <h3>Test Cases</h3>\
             <table class="table">\
                 <tr>\
@@ -85,19 +85,19 @@
                 </div>\
             </div>';
 
-    app.directive('learnEs6', function() {
+    app.directive('sandboxChallenge', function() {
         return {
             scope: {
                 testCases: '=',
                 challengeId: '@'
             },
-            controller: LearnEs6WrapperCtrl,
+            controller: SandboxChallengeCtrl,
             controllerAs: 'wrapperCtrl',
-            template: learnEs6Html
+            template: sandboxChallengeHtml
         }
     });
 
-    var LearnEs6WrapperCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin) {
+    var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin) {
         var _this = this;
         this.testCases = $scope.testCases;
         this.challengeId = $scope.challengeId;
@@ -114,7 +114,7 @@
         };
 
         //setup firebase connection
-        this.dbRef = new Firebase('https://live-leaderboard.firebaseio.com/learnEs6');
+        this.dbRef = new Firebase('https://live-leaderboard.firebaseio.com/theSandboxChallenge');
         this.usersData = $firebase(this.dbRef);
         this.auth = $firebaseSimpleLogin(this.dbRef);
         $rootScope.$on("$firebaseSimpleLogin:login", this.onUserLoggedIn.bind(this));
@@ -131,11 +131,11 @@
 
     };
 
-    LearnEs6WrapperCtrl.prototype.login = function() {
+    SandboxChallengeCtrl.prototype.login = function() {
         this.auth.$login('github');
     };
 
-    LearnEs6WrapperCtrl.prototype.onUserLoggedIn = function(event, user) {
+    SandboxChallengeCtrl.prototype.onUserLoggedIn = function(event, user) {
         var _this = this;
         this.usersData[user.uid] = this.usersData[user.uid] || {};
 
@@ -158,7 +158,7 @@
         });
     };
 
-    LearnEs6WrapperCtrl.prototype.getScoreFromUserData = function(userData) {
+    SandboxChallengeCtrl.prototype.getScoreFromUserData = function(userData) {
         var score = 0;
 
         for (var challengeId in userData.challenges) {
@@ -170,7 +170,7 @@
         return score;
     };
 
-    LearnEs6WrapperCtrl.prototype.getLastCompletedChallengeFromUserData = function(userData) {
+    SandboxChallengeCtrl.prototype.getLastCompletedChallengeFromUserData = function(userData) {
         var latestCompletedChallengeDate = null;
         var latestCompletedChallenge = null;
 
@@ -197,7 +197,7 @@
 
 
     //taken from http://stackoverflow.com/a/3177838/373655
-    LearnEs6WrapperCtrl.prototype.timeSince = function(date) {
+    SandboxChallengeCtrl.prototype.timeSince = function(date) {
         if (typeof date !== 'object') {
             date = new Date(date);
         }
