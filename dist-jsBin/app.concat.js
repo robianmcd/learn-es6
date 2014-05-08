@@ -17,7 +17,7 @@ TestCase.prototype.isPassing = function() {
 };
 (function() {
 
-    var app = angular.module('theSandboxChallenge', ['firebase']);
+    var app = angular.module('theSandboxChallenge', ['firebase', 'ui.bootstrap']);
 
     app.config(function($sceDelegateProvider) {
         $sceDelegateProvider.resourceUrlWhitelist([
@@ -36,7 +36,7 @@ TestCase.prototype.isPassing = function() {
 
     //language=HTML
     var sandboxChallengeHtml = '\
-        <h3>Test Cases</h3>\
+        <h4>Test Cases</h4>\
             <table class="table">\
                 <tr>\
                     <th></th>\
@@ -101,14 +101,15 @@ TestCase.prototype.isPassing = function() {
                         <div class="panel panel-info">\
                             <div class="panel-heading">Recent Activity</div>\
                             <div class="panel-body">\
-                                <div class="media" ng-repeat="userData in wrapperCtrl.usersData | orderByPriority | reverse | limitTo:10">\
+                                <div class="media" ng-repeat="userData in wrapperCtrl.usersData | orderByPriority | reverse | limitTo:10" \
+                                    ng-init="lastChallenge = wrapperCtrl.getLastCompletedChallengeFromUserData(userData)" ng-show="lastChallenge">\
                                     <a class="pull-left" href="">\
                                         <img class="media-object" ng-src="{{userData.profile.pic}}" width="60px" alt="Profile Picture">\
                                     </a>\
                                     <div class="media-body">\
                                         <h4 class="media-heading">{{userData.profile.name}}</h4>\
-                                        Completed "<strong>{{wrapperCtrl.getLastCompletedChallengeFromUserData(userData).name}}</strong>", \
-                                        {{wrapperCtrl.timeSince(wrapperCtrl.getLastCompletedChallengeFromUserData(userData).date)}} ago.\
+                                        Completed "<strong>{{lastChallenge.name}}</strong>", \
+                                        {{wrapperCtrl.timeSince(lastChallenge.date)}} ago.\
                                     </div>\
                                 </div>\
                             </div>\
@@ -135,11 +136,15 @@ TestCase.prototype.isPassing = function() {
         this.challengeId = $scope.challengeId;
 
         this.CHALLENGES = {
-            scopes01: {
+            blockScopeLet: {
                 jsBin: 'xuboz',
                 name: 'Scopes Level 1'
             },
-            scopes02: {
+            forOfLoops: {
+                jsBin: 'TEST',
+                name: 'Scopes Level 2'
+            },
+            destructuringMultipleReturns: {
                 jsBin: 'TEST',
                 name: 'Scopes Level 2'
             }

@@ -1,1 +1,1 @@
-Interactive samples of new features in ES6
+Interactive code samples

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html ng-app="theSandboxChallenge.setup" ng-cloak ng-controller="SetupCtrl as ctrl">
+<head>
+    <meta charset="utf-8"/>
+    <script src="http://static.jsbin.com/js/vendor/traceur.js"></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+
+    <!-- Single button -->
+    <div style="margin: 20px 5px">
+        <div style="width: 100%" class="btn-group btn-group-lg" dropdown>
+            <button style="width: 100%" type="button" class="btn btn-default dropdown-toggle">
+                Destructuring: Multiple return values <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#"><span class="text-success glyphicon glyphicon-ok"></span> Block Scope</a></li>
+                <li><a href="#"><span class="text-success glyphicon glyphicon-ok"></span> <strong>Destructuring: Multiple return values</strong></a></li>
+                <li><a href="#">Destructuring: swap</a></li>
+                <li><a href="#">For...Of Loops</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <p>
+        Use destructuring to assign the return value of ____ to val and err in a single line.
+    </p>
+
+    <div sandbox-challenge test-cases="ctrl.testCases" challenge-id="forOfLoops"></div>
+
+</div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
+<script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.0.js"></script>
+
+<script src="https://cdn.firebase.com/js/client/1.0.11/firebase.js"></script>
+<script src='https://cdn.firebase.com/js/simple-login/1.3.2/firebase-simple-login.js'></script>
+
+<script src="http://robianmcd.github.io/the-sandbox-challenge/src/app.concat.js"></script>
+
+<script src="http://robianmcd.github.io/the-sandbox-challenge/src/challenges/es6/destructuring-multiple-returns/setup.js"></script>
+
+</body>
+</html>

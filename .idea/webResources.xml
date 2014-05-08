@@ -6,6 +6,7 @@
         <entryData>
           <resourceRoots>
             <path value="file://$PROJECT_DIR$/dist" />
+            <path value="file://$PROJECT_DIR$/dist-local" />
           </resourceRoots>
         </entryData>
       </entry>
