@@ -34,9 +34,41 @@ TestCase.prototype.isPassing = function() {
 
     var app = angular.module('theSandboxChallenge');
 
+    app.filter('reverse', function() {
+        return function(items) {
+            return items.slice().reverse();
+        };
+    });
+
+}());
+(function() {
+
+    var app = angular.module('theSandboxChallenge');
+
     //language=HTML
     var sandboxChallengeHtml = '\
-        <h4>Test Cases</h4>\
+        <div class="container">\
+            <div style="margin: 20px 5px">\
+                <div style="width: 100%" class="btn-group btn-group-lg" dropdown>\
+                    <button style="width: 100%" type="button" class="btn btn-default dropdown-toggle">\
+                        <span ng-show="ctrl.challenges[ctrl.challengeId].completed" class="text-success glyphicon glyphicon-ok"></span> \
+                        {{ctrl.challenges[ctrl.challengeId].name}} <span class="caret"></span>\
+                    </button>\
+                    <ul class="dropdown-menu" role="menu">\
+                        <li ng-repeat="challengeId in ctrl.challengeOrder">\
+                            <a href="http://jsbin.com/{{ctrl.challenges[challengeId].jsBin}}/edit?js,output">\
+                                <span ng-show="ctrl.challenges[challengeId].completed" class="text-success glyphicon glyphicon-ok"></span> \
+                                <strong ng-show="challengeId === ctrl.challengeId">{{ctrl.challenges[challengeId].name}}</strong>\
+                                <span ng-show="challengeId !== ctrl.challengeId">{{ctrl.challenges[challengeId].name}}</span>\
+                            </a>\
+                        </li>\
+                    </ul>\
+                </div>\
+            </div>\
+            \
+            <p ng-bind-html="ctrl.description"></p>\
+            \
+            <h4>Test Cases</h4>\
             <table class="table">\
                 <tr>\
                     <th></th>\
@@ -45,7 +77,7 @@ TestCase.prototype.isPassing = function() {
                     <th>Expected Value</th>\
                     <th>Actual Value</th>\
                 </tr>\
-                <tr ng-repeat="testCase in wrapperCtrl.testCases">\
+                <tr ng-repeat="testCase in ctrl.testCases">\
                     <td>\
                         <span ng-show="testCase.isPassing()" class="text-success glyphicon glyphicon-ok"></span>\
                         <span ng-show="!testCase.isPassing()" class="text-danger glyphicon glyphicon-remove"></span>\
@@ -61,11 +93,11 @@ TestCase.prototype.isPassing = function() {
                 </tr>\
             </table>\
             \
-            <div ng-show="wrapperCtrl.allPassing">\
+            <div ng-show="ctrl.allPassing">\
                 Nice Job!\
-                <div ng-show="wrapperCtrl.loginStateDetermined && !wrapperCtrl.auth.user">\
+                <div ng-show="ctrl.loginStateDetermined && !ctrl.auth.user">\
                     Share you accomplishments on the leader board by logging in:\
-                    <button ng-click="wrapperCtrl.login()">Login with Github</button>\
+                    <button ng-click="ctrl.login()">Login with Github</button>\
                 </div>\
             </div>\
             <div>\
@@ -75,7 +107,7 @@ TestCase.prototype.isPassing = function() {
                         <div class="panel panel-success">\
                             <div class="panel-heading">High scores</div>\
                             <div class="panel-body">\
-                                <div class="row" ng-repeat="userData in wrapperCtrl.usersData | orderByPriority | orderBy:wrapperCtrl.getScoreFromUserData.bind(wrapperCtrl) | reverse | limitTo:10">\
+                                <div class="row" ng-repeat="userData in ctrl.usersData | orderByPriority | orderBy:ctrl.getScoreFromUserData.bind(ctrl) | reverse | limitTo:10">\
                                     <div class="col-xs-1">\
                                         <h3>{{$index + 1}}</h3>\
                                     </div>\
@@ -89,7 +121,7 @@ TestCase.prototype.isPassing = function() {
                                             </a>\
                                             <div class="media-body">\
                                                 <h4 class="media-heading">{{userData.profile.name}}</h4>\
-                                                Score: <strong>{{wrapperCtrl.getScoreFromUserData(userData) || 0}}</strong>\
+                                                Score: <strong>{{ctrl.getScoreFromUserData(userData) || 0}}</strong>\
                                             </div>\
                                         </div>\
                                     </div>\
@@ -101,54 +133,60 @@ TestCase.prototype.isPassing = function() {
                         <div class="panel panel-info">\
                             <div class="panel-heading">Recent Activity</div>\
                             <div class="panel-body">\
-                                <div class="media" ng-repeat="userData in wrapperCtrl.usersData | orderByPriority | reverse | limitTo:10" \
-                                    ng-init="lastChallenge = wrapperCtrl.getLastCompletedChallengeFromUserData(userData)" ng-show="lastChallenge">\
+                                <div class="media" ng-repeat="userData in ctrl.usersData | orderByPriority | reverse | limitTo:10" \
+                                    ng-init="lastChallenge = ctrl.getLastCompletedChallengeFromUserData(userData)" ng-show="lastChallenge">\
                                     <a class="pull-left" href="">\
                                         <img class="media-object" ng-src="{{userData.profile.pic}}" width="60px" alt="Profile Picture">\
                                     </a>\
                                     <div class="media-body">\
                                         <h4 class="media-heading">{{userData.profile.name}}</h4>\
                                         Completed "<strong>{{lastChallenge.name}}</strong>", \
-                                        {{wrapperCtrl.timeSince(lastChallenge.date)}} ago.\
+                                        {{ctrl.timeSince(lastChallenge.date)}} ago.\
                                     </div>\
                                 </div>\
                             </div>\
                         </div>\
                     </div>\
                 </div>\
-            </div>';
+            </div>\
+        </div>\
+        ';
 
     app.directive('sandboxChallenge', function() {
         return {
             scope: {
                 testCases: '=',
-                challengeId: '@'
+                challengeId: '=',
+                description: '='
             },
             controller: SandboxChallengeCtrl,
-            controllerAs: 'wrapperCtrl',
+            controllerAs: 'ctrl',
             template: sandboxChallengeHtml
         }
     });
 
-    var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin) {
+    var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce) {
         var _this = this;
         this.testCases = $scope.testCases;
         this.challengeId = $scope.challengeId;
+        this.description = $sce.trustAsHtml($scope.description);
 
-        this.CHALLENGES = {
+        this.challenges = {
             blockScopeLet: {
-                jsBin: 'xuboz',
-                name: 'Scopes Level 1'
+                jsBin: 'likum',
+                name: 'Bock Scopes'
             },
             forOfLoops: {
-                jsBin: 'TEST',
-                name: 'Scopes Level 2'
+                jsBin: 'katum',
+                name: 'For...Of Loops'
             },
             destructuringMultipleReturns: {
-                jsBin: 'TEST',
-                name: 'Scopes Level 2'
+                jsBin: 'fidig',
+                name: 'Destructuring: Multiple Returns'
             }
         };
+
+        this.challengeOrder = ['blockScopeLet', 'forOfLoops', 'destructuringMultipleReturns'];
 
         //setup firebase connection
         this.dbRef = new Firebase('https://live-leaderboard.firebaseio.com/theSandboxChallenge');
@@ -159,6 +197,10 @@ TestCase.prototype.isPassing = function() {
         this.allPassing = true;
         for (var i = 0; i < this.testCases.length; i++) {
             this.allPassing = this.allPassing && this.testCases[i].isPassing();
+        }
+
+        if (this.allPassing) {
+            this.challenges[this.challengeId].completed = true;
         }
 
         this.loginStateDetermined = false;
@@ -184,14 +226,21 @@ TestCase.prototype.isPassing = function() {
             };
 
             _this.usersData[user.uid].challenges = _this.usersData[user.uid].challenges || {};
+            var userChallenges = _this.usersData[user.uid].challenges;
 
-            if (_this.allPassing && !_this.usersData[user.uid].challenges[_this.challengeId]) {
+            if (_this.allPassing && !userChallenges[_this.challengeId]) {
                 var now = new Date();
-                _this.usersData[user.uid].challenges[_this.challengeId] = now;
+                userChallenges[_this.challengeId] = now;
                 _this.usersData[user.uid].$priority = now;
             }
 
             _this.usersData.$save(user.uid);
+
+            for (var key in userChallenges) {
+                if (key in _this.challenges) {
+                    _this.challenges[key].completed = true;
+                }
+            }
         });
     };
 
@@ -199,7 +248,7 @@ TestCase.prototype.isPassing = function() {
         var score = 0;
 
         for (var challengeId in userData.challenges) {
-            if (this.CHALLENGES.hasOwnProperty(challengeId)) {
+            if (this.challenges.hasOwnProperty(challengeId)) {
                 score++;
             }
         }
@@ -212,11 +261,11 @@ TestCase.prototype.isPassing = function() {
         var latestCompletedChallenge = null;
 
         for (var challengeId in userData.challenges) {
-            if (this.CHALLENGES.hasOwnProperty(challengeId)) {
+            if (this.challenges.hasOwnProperty(challengeId)) {
 
                 if (!latestCompletedChallengeDate || userData.challenges[challengeId] > latestCompletedChallengeDate) {
                     latestCompletedChallengeDate = userData.challenges[challengeId];
-                    latestCompletedChallenge = this.CHALLENGES[challengeId];
+                    latestCompletedChallenge = this.challenges[challengeId];
                 }
             }
         }
@@ -275,17 +324,6 @@ TestCase.prototype.isPassing = function() {
 
         return interval + ' ' + intervalType;
     };
-
-}());
-(function() {
-
-    var app = angular.module('theSandboxChallenge');
-
-    app.filter('reverse', function() {
-        return function(items) {
-            return items.slice().reverse();
-        };
-    });
 
 }());
 // AngularFire is an officially supported AngularJS binding for Firebase.

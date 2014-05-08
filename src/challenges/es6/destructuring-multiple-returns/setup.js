@@ -5,6 +5,9 @@ var SetupCtrl = function($injector) {
 
     this.window = window;
 
+    this.challengeId = 'destructuringMultipleReturns';
+    this.description = 'Use destructuring to assign the return value of ____ to val and err in a single line.';
+
     this.testCases = [
         $injector.instantiate(TestCase, {
             description: 'numIsValid',

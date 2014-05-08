@@ -5,6 +5,10 @@ var SetupCtrl = function($injector) {
 
     this.window = window;
 
+    this.challengeId = 'blockScopeLet';
+
+    this.description = 'Change the code so that the temporary variables <code>i</code> and <code>iSquared</code> are not on the global scope.';
+
     this.testCases = [
         $injector.instantiate(TestCase, {
             description: '<code>i</code> should not be on the global scope.',

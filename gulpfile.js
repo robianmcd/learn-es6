@@ -85,6 +85,9 @@ gulp.task('buildJs', function() {
     gulp.src(jsChallengeFiles)
         .pipe(traceur({sourceMaps: true, experimental: true}))
         .pipe(gulp.dest('dist-local/challenges'));
+
+    gulp.src(jsChallengeFiles)
+        .pipe(gulp.dest('dist-jsbin/challenges'));
 });
 
 gulp.task('buildAll', ['buildJs', 'buildIndexFiles']);
