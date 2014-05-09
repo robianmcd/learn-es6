@@ -134,11 +134,11 @@
                 name: 'Bock Scopes'
             },
             forOfLoops: {
-                jsBin: 'katum',
+                jsBin: 'fidig',
                 name: 'For...Of Loops'
             },
             destructuringMultipleReturns: {
-                jsBin: 'fidig',
+                jsBin: 'katum',
                 name: 'Destructuring: Multiple Returns'
             }
         };
