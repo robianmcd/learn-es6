@@ -34,17 +34,6 @@ TestCase.prototype.isPassing = function() {
 
     var app = angular.module('theSandboxChallenge');
 
-    app.filter('reverse', function() {
-        return function(items) {
-            return items.slice().reverse();
-        };
-    });
-
-}());
-(function() {
-
-    var app = angular.module('theSandboxChallenge');
-
     //language=HTML
     var sandboxChallengeHtml = '\
         <div class="container">\
@@ -56,7 +45,7 @@ TestCase.prototype.isPassing = function() {
                     </button>\
                     <ul class="dropdown-menu" role="menu">\
                         <li ng-repeat="challengeId in ctrl.challengeOrder">\
-                            <a href="http://jsbin.com/{{ctrl.challenges[challengeId].jsBin}}/edit?js,output">\
+                            <a href="" ng-click="ctrl.goto(\'#{{ctrl.challenges[challengeId].jsBin}}\')">\
                                 <span ng-show="ctrl.challenges[challengeId].completed" class="text-success glyphicon glyphicon-ok"></span> \
                                 <strong ng-show="challengeId === ctrl.challengeId">{{ctrl.challenges[challengeId].name}}</strong>\
                                 <span ng-show="challengeId !== ctrl.challengeId">{{ctrl.challenges[challengeId].name}}</span>\
@@ -324,6 +313,21 @@ TestCase.prototype.isPassing = function() {
 
         return interval + ' ' + intervalType;
     };
+
+    SandboxChallengeCtrl.prototype.goTo = function(url) {
+        window.top.postMessage(url, '*');
+    }
+
+}());
+(function() {
+
+    var app = angular.module('theSandboxChallenge');
+
+    app.filter('reverse', function() {
+        return function(items) {
+            return items.slice().reverse();
+        };
+    });
 
 }());
 // AngularFire is an officially supported AngularJS binding for Firebase.

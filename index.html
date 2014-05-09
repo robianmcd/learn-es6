@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html ng-app="wrapperApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>The Sandbox Challenge</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-route.js"></script>
+    <script src="wrapperApp/wrapperApp.js"></script>
+
+</head>
+<body style="margin:0;padding:0;overflow:hidden;">
+
+<div ng-view></div>
+
+<script>
+    window.addEventListener( "message",
+        function (e) {
+            if(typeof e.data === 'string') {
+                location = e.data;
+            }
+        },
+        false
+    );
+</script>
+
+
+</body>
+</html>
