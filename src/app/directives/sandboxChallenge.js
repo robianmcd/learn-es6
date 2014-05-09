@@ -13,7 +13,7 @@
                     </button>\
                     <ul class="dropdown-menu" role="menu">\
                         <li ng-repeat="challengeId in ctrl.challengeOrder">\
-                            <a href="" ng-click="ctrl.goto(\'#{{ctrl.challenges[challengeId].jsBin}}\')">\
+                            <a href="" ng-click="ctrl.goTo(\'#{{ctrl.challenges[challengeId].jsBin}}\')">\
                                 <span ng-show="ctrl.challenges[challengeId].completed" class="text-success glyphicon glyphicon-ok"></span> \
                                 <strong ng-show="challengeId === ctrl.challengeId">{{ctrl.challenges[challengeId].name}}</strong>\
                                 <span ng-show="challengeId !== ctrl.challengeId">{{ctrl.challenges[challengeId].name}}</span>\
