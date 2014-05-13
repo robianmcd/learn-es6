@@ -18,12 +18,11 @@ wrapperApp.config(['$routeProvider',
             });
     }]);
 
-var wrapperCtrl = function($scope, $location, $sce, $routeParams, $injector, challengeConfig) {
+var wrapperCtrl = function($scope, $location, $sce, $routeParams, challengeConfig) {
     var group = $routeParams.group;
 
     var challengeId = $routeParams.challengeId || challengeConfig.order[group][0];
 
-    console.log(group + " " + challengeId);
     var jsBinHash = challengeConfig.challenges[group][challengeId].jsBin;
 
     var jsBinUrl = 'http://jsbin.com/' + jsBinHash + '/embed?js,output"';
@@ -32,8 +31,12 @@ var wrapperCtrl = function($scope, $location, $sce, $routeParams, $injector, cha
 
     window.addEventListener( "message",
         function (e) {
-            if(typeof e.data === 'function') {
-                e.data(window, $injector);
+            if(typeof e.data === 'object') {
+                switch(e.data.cmd) {
+                    case 'setLocation':
+                        location = e.data.params[0];
+                        break;
+                }
             }
         },
         false
