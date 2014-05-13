@@ -273,7 +273,7 @@
     };
 
     SandboxChallengeCtrl.prototype.goToChallenge = function(challengeId) {
-        window.top.postMessage({cmd: 'setLocation', params: ['#/' + _this.group + '/' + challengeId]}, '*');
+        window.top.postMessage({cmd: 'setLocation', params: ['#/' + this.group + '/' + challengeId]}, '*');
     }
 
 }());
