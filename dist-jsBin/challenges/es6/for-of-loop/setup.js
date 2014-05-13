@@ -1,7 +1,7 @@
 var app = angular.module('theSandboxChallenge.setup', ['theSandboxChallenge']);
 
 var SetupCtrl = function($injector) {
-    this.group = 'es6';
+    this.group = 'ES6';
     this.challengeId = 'forOfLoops';
     this.description = 'Use destructuring to assign the return value of ____ to val and err in a single line.';
 

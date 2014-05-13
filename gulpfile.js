@@ -11,7 +11,16 @@ var lodash = require('lodash');
 var allJsFiles = 'src/**/*.js';
 var jsChallengeFiles = 'src/challenges/**/challenge.js';
 var jsSetupFiles = 'src/challenges/**/setup.js';
-var jsAppFiles = ['src/**/*.js', '!src/challenges/**'];
+
+//We need to specift the order of files that need to be loaded before other files. Files that define angular modules
+//need to be loaded before files that use the modules.
+var jsAppFiles = [
+    'src/app/lib/**/*.js',
+    'src/app/config/configApp.js',
+    'src/app/app.js',
+    'src/**/*.js',
+    '!src/challenges/**'];
+
 var htmlFiles = 'src/**/*.html';
 
 var jsBinDistUrl = 'http://robianmcd.github.io/the-sandbox-challenge/dist-jsBin';

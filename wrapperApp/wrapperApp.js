@@ -14,7 +14,7 @@ wrapperApp.config(['$routeProvider',
                 controller: 'wrapperCtrl'
             })
             .otherwise({
-                redirectTo: '/es6'
+                redirectTo: '/ES6'
             });
     }]);
 

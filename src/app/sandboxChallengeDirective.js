@@ -5,6 +5,28 @@
     //language=HTML
     var sandboxChallengeHtml = '\
         <div class="container">\
+            <div class="navbar navbar-default">\
+                <div class="container-fluid">\
+                    <div class="navbar-header">\
+                        <span class="navbar-brand">Challenges:</span>\
+                    </div>\
+                    <ul class="nav navbar-nav">\
+                        <li ng-repeat="(group, challenge) in ctrl.challengeConfig.challenges" ng-class="{active: group === ctrl.group}">\
+                            <a ng-click="ctrl.goToGroup(group)" href="">{{group}}</a>\
+                        </li>\
+                    </ul>\
+                    <span ng-show="ctrl.loginStateDetermined && !ctrl.auth.user">\
+                        <span class="navbar-text">Login with:</span>\
+                        <span ng-click="ctrl.login(\'github\')" style="font-size: 200%; padding:2px 6px" class="fa fa-github btn btn-default navbar-btn"></span>\
+                        <span ng-click="ctrl.login(\'google\')" style="font-size: 200%; padding:2px 6px" class="fa fa-google-plus btn btn-default navbar-btn"></span>\
+                        <span ng-click="ctrl.login(\'twitter\')" style="font-size: 200%; padding:2px 6px" class="fa fa-twitter btn btn-default navbar-btn"></span>\
+                        <span ng-click="ctrl.login(\'facebook\')" style="font-size: 200%; padding:2px 6px" class="fa fa-facebook-square btn btn-default navbar-btn"></span>\
+                    </span>\
+                    <span ng-show="ctrl.loginStateDetermined && ctrl.auth.user">\
+                        <span class="navbar-text">Welcome Rob <a ng-click="ctrl.logout()" class="navbar-link" href="">logout</a></span>\
+                    </span>\
+                </div>\
+            </div>\
             <div style="margin: 20px 5px">\
                 <div style="width: 100%" class="btn-group btn-group-lg" dropdown>\
                     <button style="width: 100%" type="button" class="btn btn-default dropdown-toggle">\
@@ -54,7 +76,7 @@
                 Nice Job!\
                 <div ng-show="ctrl.loginStateDetermined && !ctrl.auth.user">\
                     Share you accomplishments on the leader board by logging in:\
-                    <button ng-click="ctrl.login()">Login with Github</button>\
+                    <button ng-click="ctrl.login(\'github\')">Login with Github</button>\
                 </div>\
             </div>\
             <div>\
@@ -64,7 +86,7 @@
                         <div class="panel panel-success">\
                             <div class="panel-heading">High scores</div>\
                             <div class="panel-body">\
-                                <div class="row" ng-repeat="userData in ctrl.usersData | orderByPriority | orderBy:ctrl.getScoreFromUserData.bind(ctrl) | reverse | limitTo:10">\
+                                <div class="row" ng-repeat="userData in ctrl.leaderboard | orderByPriority | orderBy:ctrl.getScoreFromUserData.bind(ctrl) | reverse | limitTo:10">\
                                     <div class="col-xs-1">\
                                         <h3>{{$index + 1}}</h3>\
                                     </div>\
@@ -90,7 +112,7 @@
                         <div class="panel panel-info">\
                             <div class="panel-heading">Recent Activity</div>\
                             <div class="panel-body">\
-                                <div class="media" ng-repeat="userData in ctrl.usersData | orderByPriority | reverse | limitTo:10" \
+                                <div class="media" ng-repeat="userData in ctrl.leaderboard | orderByPriority | reverse | limitTo:10" \
                                     ng-init="lastChallenge = ctrl.getLastCompletedChallengeFromUserData(userData)" ng-show="lastChallenge">\
                                     <a class="pull-left" href="">\
                                         <img class="media-object" ng-src="{{userData.profile.pic}}" width="60px" alt="Profile Picture">\
@@ -130,14 +152,14 @@
         this.challengeId = $scope.challengeId;
         this.testCases = $scope.testCases;
         this.description = $sce.trustAsHtml($scope.description);
-
+        this.challengeConfig = challengeConfig;
 
         this.challenges = challengeConfig.challenges[this.group];
         this.challengeOrder = challengeConfig.order[this.group];
 
         //setup firebase connection
-        this.dbRef = new Firebase('https://live-leaderboard.firebaseio.com/theSandboxChallenge');
-        this.usersData = $firebase(this.dbRef);
+        this.dbRef = new Firebase('https://sandbox-challenge.firebaseio.com');
+        this.leaderboard = $firebase(this.dbRef.child('leaderboard'));
         this.auth = $firebaseSimpleLogin(this.dbRef);
         $rootScope.$on("$firebaseSimpleLogin:login", this.onUserLoggedIn.bind(this));
 
@@ -157,31 +179,35 @@
 
     };
 
-    SandboxChallengeCtrl.prototype.login = function() {
-        this.auth.$login('github');
+    SandboxChallengeCtrl.prototype.login = function(provider) {
+        this.auth.$login(provider);
+    };
+
+    SandboxChallengeCtrl.prototype.logout = function() {
+        this.auth.$logout();
     };
 
     SandboxChallengeCtrl.prototype.onUserLoggedIn = function(event, user) {
         var _this = this;
-        this.usersData[user.uid] = this.usersData[user.uid] || {};
+        this.leaderboard[user.uid] = this.leaderboard[user.uid] || {};
 
         //Wait for the data to load from firebase incase it hasn't already been loaded
-        this.usersData.then(function() {
-            _this.usersData[user.uid].profile = {
+        this.leaderboard.then(function() {
+            _this.leaderboard[user.uid].profile = {
                 name: user.displayName,
                 pic: user.thirdPartyUserData.avatar_url
             };
 
-            _this.usersData[user.uid].challenges = _this.usersData[user.uid].challenges || {};
-            var userChallenges = _this.usersData[user.uid].challenges;
+            _this.leaderboard[user.uid].challenges = _this.leaderboard[user.uid].challenges || {};
+            var userChallenges = _this.leaderboard[user.uid].challenges;
 
             if (_this.allPassing && !userChallenges[_this.challengeId]) {
                 var now = new Date();
                 userChallenges[_this.challengeId] = now;
-                _this.usersData[user.uid].$priority = now;
+                _this.leaderboard[user.uid].$priority = now;
             }
 
-            _this.usersData.$save(user.uid);
+            _this.leaderboard.$save(user.uid);
 
             for (var key in userChallenges) {
                 if (key in _this.challenges) {
@@ -274,6 +300,10 @@
 
     SandboxChallengeCtrl.prototype.goToChallenge = function(challengeId) {
         window.top.postMessage({cmd: 'setLocation', params: ['#/' + this.group + '/' + challengeId]}, '*');
-    }
+    };
+
+    SandboxChallengeCtrl.prototype.goToGroup = function(group) {
+        window.top.postMessage({cmd: 'setLocation', params: ['#/' + group]}, '*');
+    };
 
 }());

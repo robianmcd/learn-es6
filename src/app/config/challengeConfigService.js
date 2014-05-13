@@ -4,7 +4,7 @@
     configApp.factory('challengeConfig', function () {
         return {
             challenges: {
-                es6: {
+                ES6: {
                     blockScopeLet: {
                         jsBin: 'likum',
                         name: 'Block Scopes'
@@ -18,13 +18,13 @@
                         name: 'Destructuring: Multiple Returns'
                     }
                 },
-                firebase: {
+                Firebase: {
 
                 }
             },
             order: {
-                es6: ['blockScopeLet', 'forOfLoops', 'destructuringMultipleReturns'],
-                firebase: []
+                ES6: ['blockScopeLet', 'forOfLoops', 'destructuringMultipleReturns'],
+                Firebase: []
             }
 
         }

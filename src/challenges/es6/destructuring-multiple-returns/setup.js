@@ -3,7 +3,7 @@ var app = angular.module('theSandboxChallenge.setup', ['theSandboxChallenge', 'u
 var SetupCtrl = function($injector) {
     var _this = this;
 
-    this.group = 'es6';
+    this.group = 'ES6';
     this.challengeId = 'destructuringMultipleReturns';
     this.description = 'Use destructuring to assign the return value of ____ to val and err in a single line.';
 
