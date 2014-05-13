@@ -10,11 +10,11 @@
                         name: 'Block Scopes'
                     },
                     forOfLoops: {
-                        jsBin: 'fidig',
+                        jsBin: 'katum',
                         name: 'For...Of Loops'
                     },
                     destructuringMultipleReturns: {
-                        jsBin: 'katum',
+                        jsBin: 'fidig',
                         name: 'Destructuring: Multiple Returns'
                     }
                 },
