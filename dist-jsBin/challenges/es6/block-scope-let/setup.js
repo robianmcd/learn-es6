@@ -3,11 +3,11 @@ var app = angular.module('theSandboxChallenge.setup', ['theSandboxChallenge']);
 var SetupCtrl = function($injector) {
     var _this = this;
 
-    this.window = window;
-
+    this.group = 'es6';
     this.challengeId = 'blockScopeLet';
-
     this.description = 'Change the code so that the temporary variables <code>i</code> and <code>iSquared</code> are not on the global scope.';
+
+    this.window = window;
 
     this.testCases = [
         $injector.instantiate(TestCase, {

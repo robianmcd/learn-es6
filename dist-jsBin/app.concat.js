@@ -1,23 +1,6 @@
-var TestCase = function($sce, description, expression, expectedValue, getActualValue) {
-    this.description = $sce.trustAsHtml(description);
-
-    if (expression) {
-        this.expression = $sce.trustAsHtml('<code>' + expression + '</code>');
-    }
-    else {
-        this.expression = $sce.trustAsHtml('n/a');
-    }
-
-    this.expectedValue = expectedValue;
-    this.getActualValue = getActualValue;
-};
-
-TestCase.prototype.isPassing = function() {
-    return this.getActualValue() === this.expectedValue;
-};
 (function() {
 
-    var app = angular.module('theSandboxChallenge', ['firebase', 'ui.bootstrap']);
+    var app = angular.module('theSandboxChallenge', ['theSandboxChallenge.config', 'firebase', 'ui.bootstrap']);
 
     app.config(function($sceDelegateProvider) {
         $sceDelegateProvider.resourceUrlWhitelist([
@@ -45,7 +28,7 @@ TestCase.prototype.isPassing = function() {
                     </button>\
                     <ul class="dropdown-menu" role="menu">\
                         <li ng-repeat="challengeId in ctrl.challengeOrder">\
-                            <a href="" ng-click="ctrl.goTo(\'#\' + ctrl.challenges[challengeId].jsBin)">\
+                            <a href="" ng-click="ctrl.goToChallenge(challengeId)">\
                                 <span ng-show="ctrl.challenges[challengeId].completed" class="text-success glyphicon glyphicon-ok"></span> \
                                 <strong ng-show="challengeId === ctrl.challengeId">{{ctrl.challenges[challengeId].name}}</strong>\
                                 <span ng-show="challengeId !== ctrl.challengeId">{{ctrl.challenges[challengeId].name}}</span>\
@@ -144,9 +127,11 @@ TestCase.prototype.isPassing = function() {
     app.directive('sandboxChallenge', function() {
         return {
             scope: {
-                testCases: '=',
+                group: '=',
                 challengeId: '=',
+                testCases: '=',
                 description: '='
+
             },
             controller: SandboxChallengeCtrl,
             controllerAs: 'ctrl',
@@ -154,28 +139,16 @@ TestCase.prototype.isPassing = function() {
         }
     });
 
-    var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce) {
+    var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce, challengeConfig) {
         var _this = this;
-        this.testCases = $scope.testCases;
+        this.group = $scope.group;
         this.challengeId = $scope.challengeId;
+        this.testCases = $scope.testCases;
         this.description = $sce.trustAsHtml($scope.description);
 
-        this.challenges = {
-            blockScopeLet: {
-                jsBin: 'likum',
-                name: 'Bock Scopes'
-            },
-            forOfLoops: {
-                jsBin: 'fidig',
-                name: 'For...Of Loops'
-            },
-            destructuringMultipleReturns: {
-                jsBin: 'katum',
-                name: 'Destructuring: Multiple Returns'
-            }
-        };
 
-        this.challengeOrder = ['blockScopeLet', 'forOfLoops', 'destructuringMultipleReturns'];
+        this.challenges = challengeConfig.challenges[this.group];
+        this.challengeOrder = challengeConfig.order[this.group];
 
         //setup firebase connection
         this.dbRef = new Firebase('https://live-leaderboard.firebaseio.com/theSandboxChallenge');
@@ -314,10 +287,72 @@ TestCase.prototype.isPassing = function() {
         return interval + ' ' + intervalType;
     };
 
-    SandboxChallengeCtrl.prototype.goTo = function(url) {
-        window.top.postMessage(url, '*');
+    SandboxChallengeCtrl.prototype.goToChallenge = function(challengeId) {
+        var _this = this;
+
+        window.top.postMessage(
+            function(outerWindow, $injector) {
+                $injector.get('$location').path('/' + _this.group + '/' + challengeId);
+            },
+            '*'
+        );
     }
 
+}());
+var TestCase = function($sce, description, expression, expectedValue, getActualValue) {
+    this.description = $sce.trustAsHtml(description);
+
+    if (expression) {
+        this.expression = $sce.trustAsHtml('<code>' + expression + '</code>');
+    }
+    else {
+        this.expression = $sce.trustAsHtml('n/a');
+    }
+
+    this.expectedValue = expectedValue;
+    this.getActualValue = getActualValue;
+};
+
+TestCase.prototype.isPassing = function() {
+    return this.getActualValue() === this.expectedValue;
+};
+(function() {
+    angular.module('theSandboxChallenge.config', []);
+}());
+
+
+
+(function() {
+    var configApp = angular.module('theSandboxChallenge.config');
+
+    configApp.factory('challengeConfig', function () {
+        return {
+            challenges: {
+                es6: {
+                    blockScopeLet: {
+                        jsBin: 'likum',
+                        name: 'Block Scopes'
+                    },
+                    forOfLoops: {
+                        jsBin: 'fidig',
+                        name: 'For...Of Loops'
+                    },
+                    destructuringMultipleReturns: {
+                        jsBin: 'katum',
+                        name: 'Destructuring: Multiple Returns'
+                    }
+                },
+                firebase: {
+
+                }
+            },
+            order: {
+                es6: ['blockScopeLet', 'forOfLoops', 'destructuringMultipleReturns'],
+                firebase: []
+            }
+
+        }
+    });
 }());
 (function() {
 

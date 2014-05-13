@@ -1,6 +1,6 @@
 (function() {
 
-    var app = angular.module('theSandboxChallenge', ['firebase', 'ui.bootstrap']);
+    var app = angular.module('theSandboxChallenge', ['theSandboxChallenge.config', 'firebase', 'ui.bootstrap']);
 
     app.config(function($sceDelegateProvider) {
         $sceDelegateProvider.resourceUrlWhitelist([

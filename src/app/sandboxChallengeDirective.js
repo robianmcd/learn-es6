@@ -13,7 +13,7 @@
                     </button>\
                     <ul class="dropdown-menu" role="menu">\
                         <li ng-repeat="challengeId in ctrl.challengeOrder">\
-                            <a href="" ng-click="ctrl.goTo(\'#\' + ctrl.challenges[challengeId].jsBin)">\
+                            <a href="" ng-click="ctrl.goToChallenge(challengeId)">\
                                 <span ng-show="ctrl.challenges[challengeId].completed" class="text-success glyphicon glyphicon-ok"></span> \
                                 <strong ng-show="challengeId === ctrl.challengeId">{{ctrl.challenges[challengeId].name}}</strong>\
                                 <span ng-show="challengeId !== ctrl.challengeId">{{ctrl.challenges[challengeId].name}}</span>\
@@ -112,9 +112,11 @@
     app.directive('sandboxChallenge', function() {
         return {
             scope: {
-                testCases: '=',
+                group: '=',
                 challengeId: '=',
+                testCases: '=',
                 description: '='
+
             },
             controller: SandboxChallengeCtrl,
             controllerAs: 'ctrl',
@@ -122,28 +124,16 @@
         }
     });
 
-    var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce) {
+    var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce, challengeConfig) {
         var _this = this;
-        this.testCases = $scope.testCases;
+        this.group = $scope.group;
         this.challengeId = $scope.challengeId;
+        this.testCases = $scope.testCases;
         this.description = $sce.trustAsHtml($scope.description);
 
-        this.challenges = {
-            blockScopeLet: {
-                jsBin: 'likum',
-                name: 'Bock Scopes'
-            },
-            forOfLoops: {
-                jsBin: 'fidig',
-                name: 'For...Of Loops'
-            },
-            destructuringMultipleReturns: {
-                jsBin: 'katum',
-                name: 'Destructuring: Multiple Returns'
-            }
-        };
 
-        this.challengeOrder = ['blockScopeLet', 'forOfLoops', 'destructuringMultipleReturns'];
+        this.challenges = challengeConfig.challenges[this.group];
+        this.challengeOrder = challengeConfig.order[this.group];
 
         //setup firebase connection
         this.dbRef = new Firebase('https://live-leaderboard.firebaseio.com/theSandboxChallenge');
@@ -282,8 +272,15 @@
         return interval + ' ' + intervalType;
     };
 
-    SandboxChallengeCtrl.prototype.goTo = function(url) {
-        window.top.postMessage(url, '*');
+    SandboxChallengeCtrl.prototype.goToChallenge = function(challengeId) {
+        var _this = this;
+
+        window.top.postMessage(
+            function(outerWindow, $injector) {
+                $injector.get('$location').path('/' + _this.group + '/' + challengeId);
+            },
+            '*'
+        );
     }
 
 }());

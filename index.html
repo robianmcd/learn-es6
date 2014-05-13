@@ -6,24 +6,14 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-route.js"></script>
+    <script src="src/app/config/appConfig.js"></script>
+    <script src="src/app/config/challengeConfigService.js"></script>
     <script src="wrapperApp/wrapperApp.js"></script>
 
 </head>
 <body style="margin:0;padding:0;overflow:hidden;">
 
 <div ng-view></div>
-
-<script>
-    window.addEventListener( "message",
-        function (e) {
-            if(typeof e.data === 'string') {
-                location = e.data;
-            }
-        },
-        false
-    );
-</script>
-
 
 </body>
 </html>
