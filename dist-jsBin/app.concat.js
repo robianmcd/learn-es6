@@ -1054,7 +1054,7 @@
 
     //language=HTML
     var sandboxChallengeHtml = '\
-        <div style="margin-top:20px">\
+        <div style="margin-top:30px">\
             <div class="navbar navbar-default">\
                 <div class="container-fluid">\
                     <div class="navbar-header">\
