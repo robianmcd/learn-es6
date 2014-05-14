@@ -1054,7 +1054,7 @@
 
     //language=HTML
     var sandboxChallengeHtml = '\
-        <div class="container">\
+        <div style="margin-top:20px">\
             <div class="navbar navbar-default">\
                 <div class="container-fluid">\
                     <div class="navbar-header">\
@@ -1066,13 +1066,18 @@
                         </li>\
                     </ul>\
                     <span ng-show="ctrl.loginStateDetermined && !ctrl.auth.user">\
-                        <span class="navbar-text">Login with:</span>\
-                        <span ng-click="ctrl.login(\'github\')" style="font-size: 200%; padding:2px 6px" class="fa fa-github btn btn-default navbar-btn"></span>\
-                        <span ng-click="ctrl.login(\'google\')" style="font-size: 200%; padding:2px 6px" class="fa fa-google-plus btn btn-default navbar-btn"></span>\
-                        <span ng-click="ctrl.login(\'facebook\')" style="font-size: 200%; padding:2px 6px" class="fa fa-facebook-square btn btn-default navbar-btn"></span>\
+                        <span class="navbar-right">\
+                            Login with:\
+                            <span ng-click="ctrl.login(\'github\')" style="font-size: 200%; padding:2px 6px" class="fa fa-github btn btn-default navbar-btn"></span>\
+                            <span ng-click="ctrl.login(\'google\')" style="font-size: 200%; padding:2px 6px" class="fa fa-google-plus btn btn-default navbar-btn"></span>\
+                            <span ng-click="ctrl.login(\'facebook\')" style="font-size: 200%; padding:2px 6px" class="fa fa-facebook-square btn btn-default navbar-btn"></span>\
+                        </span>\
                     </span>\
                     <span ng-show="ctrl.loginStateDetermined && ctrl.auth.user">\
-                        <span class="navbar-text">Welcome Rob <a ng-click="ctrl.logout()" class="navbar-link" href="">logout</a></span>\
+                        <span style="margin-top:5px" class="navbar-right">\
+                            <a ng-click="ctrl.logout()" class="navbar-link" href="">Log out</a>\
+                            <img class="navbar-img" height="40px" ng-src="{{ctrl.getPicFromUser(ctrl.auth.user)}}" alt="Profile"/>\
+                        </span>\
                     </span>\
                 </div>\
             </div>\
