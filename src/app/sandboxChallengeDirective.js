@@ -18,9 +18,7 @@
                     <span ng-show="ctrl.loginStateDetermined && !ctrl.auth.user">\
                         <span class="navbar-right">\
                             Login with:\
-                            <span ng-click="ctrl.login(\'github\')" style="font-size: 200%; padding:2px 6px" class="fa fa-github btn btn-default navbar-btn"></span>\
-                            <span ng-click="ctrl.login(\'google\')" style="font-size: 200%; padding:2px 6px" class="fa fa-google-plus btn btn-default navbar-btn"></span>\
-                            <span ng-click="ctrl.login(\'facebook\')" style="font-size: 200%; padding:2px 6px" class="fa fa-facebook-square btn btn-default navbar-btn"></span>\
+                            <span login-buttons></span>\
                         </span>\
                     </span>\
                     <span ng-show="ctrl.loginStateDetermined && ctrl.auth.user">\
@@ -80,7 +78,12 @@
                 Nice Job!\
                 <div ng-show="ctrl.loginStateDetermined && !ctrl.auth.user">\
                     Share you accomplishments on the leader board by logging in:\
-                    <button ng-click="ctrl.login(\'github\')">Login with Github</button>\
+                    <span login-buttons></span>\
+                </div>\
+                <div ng-show="ctrl.getNextChallengeId()" style="text-align:center; margin-top:20px">\
+                    <button ng-click="ctrl.goToChallenge(ctrl.getNextChallengeId())" class="btn btn-success btn-lg">\
+                        Next Challenge <span class="fa fa-arrow-right"></span>\
+                    </button>\
                 </div>\
             </div>\
             <div>\
@@ -327,5 +330,16 @@
     SandboxChallengeCtrl.prototype.goToGroup = function(group) {
         window.top.postMessage({cmd: 'setLocation', params: ['#/' + group]}, '*');
     };
+
+    SandboxChallengeCtrl.prototype.getNextChallengeId = function() {
+        var curChallengeIndex = this.challengeOrder.indexOf(this.challengeId);
+
+        if (curChallengeIndex > -1 && curChallengeIndex < this.challengeOrder.length) {
+            return this.challengeOrder[curChallengeIndex + 1];
+        }
+        else {
+            return undefined;
+        }
+    }
 
 }());
