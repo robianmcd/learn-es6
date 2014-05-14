@@ -1069,7 +1069,6 @@
                         <span class="navbar-text">Login with:</span>\
                         <span ng-click="ctrl.login(\'github\')" style="font-size: 200%; padding:2px 6px" class="fa fa-github btn btn-default navbar-btn"></span>\
                         <span ng-click="ctrl.login(\'google\')" style="font-size: 200%; padding:2px 6px" class="fa fa-google-plus btn btn-default navbar-btn"></span>\
-                        <span ng-click="ctrl.login(\'twitter\')" style="font-size: 200%; padding:2px 6px" class="fa fa-twitter btn btn-default navbar-btn"></span>\
                         <span ng-click="ctrl.login(\'facebook\')" style="font-size: 200%; padding:2px 6px" class="fa fa-facebook-square btn btn-default navbar-btn"></span>\
                     </span>\
                     <span ng-show="ctrl.loginStateDetermined && ctrl.auth.user">\
@@ -1242,10 +1241,10 @@
         this.leaderboard[user.uid] = this.leaderboard[user.uid] || {};
 
         //Wait for the data to load from firebase incase it hasn't already been loaded
-        this.leaderboard.then(function() {
+        var onDataLoaded = function() {
             _this.leaderboard[user.uid].profile = {
                 name: user.displayName,
-                pic: user.thirdPartyUserData.avatar_url
+                pic: _this.getPicFromUser(user)
             };
 
             _this.leaderboard[user.uid].challenges = _this.leaderboard[user.uid].challenges || {};
@@ -1264,7 +1263,25 @@
                     _this.challenges[key].completed = true;
                 }
             }
-        });
+        };
+
+        if (this.leaderboard.then) {
+            this.leaderboard.then(onDataLoaded());
+        } else {
+            onDataLoaded();
+        }
+    };
+
+    SandboxChallengeCtrl.prototype.getPicFromUser = function(user) {
+        switch (user.provider) {
+            case 'github':
+                return user.thirdPartyUserData.avatar_url;
+            case 'google':
+                return user.thirdPartyUserData.picture;
+            case 'facebook':
+                return 'https://graph.facebook.com/' + user.id + '/picture';
+        }
+
     };
 
     SandboxChallengeCtrl.prototype.getScoreFromUserData = function(userData) {
@@ -1386,11 +1403,11 @@ TestCase.prototype.isPassing = function() {
                         name: 'Block Scopes'
                     },
                     forOfLoops: {
-                        jsBin: 'fidig',
+                        jsBin: 'katum',
                         name: 'For...Of Loops'
                     },
                     destructuringMultipleReturns: {
-                        jsBin: 'katum',
+                        jsBin: 'fidig',
                         name: 'Destructuring: Multiple Returns'
                     }
                 },
