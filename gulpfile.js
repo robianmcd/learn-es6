@@ -22,6 +22,7 @@ var jsAppFiles = [
     '!src/challenges/**'];
 
 var htmlFiles = 'src/**/*.html';
+var cssFiles = 'src/app/**/*.css';
 
 var jsBinDistUrl = 'http://robianmcd.github.io/the-sandbox-challenge/dist-jsBin';
 
@@ -60,7 +61,7 @@ var template = function(data, options) {
 
 var getRelativePathFromFile = function(file) {
     return path.dirname(file.relative).replace(/\\/g, '/');
-}
+};
 
 gulp.task('buildIndexFiles', function() {
     gulp.src('src/**/setup.js')
@@ -78,6 +79,13 @@ gulp.task('buildIndexFiles', function() {
             setupFolder: getRelativePathFromFile
         }))
         .pipe(replace('</body>', '<script src="challenge.js"></script>\n</body>'))
+        .pipe(replace('http://static.jsbin.com/js/vendor/traceur.js', 'https://traceur-compiler.googlecode.com/git/bin/traceur.js'))
+        .pipe(gulp.dest('dist-local'));
+});
+
+gulp.task('css', function() {
+    gulp.src(cssFiles)
+        .pipe(gulp.dest('dist-jsBin'))
         .pipe(gulp.dest('dist-local'));
 });
 
@@ -89,7 +97,7 @@ gulp.task('buildJs', function() {
 
     gulp.src(jsSetupFiles)
         .pipe(gulp.dest('dist-jsBin/challenges'))
-        .pipe(gulp.dest('dist-local/challenges'))
+        .pipe(gulp.dest('dist-local/challenges'));
 
     gulp.src(jsChallengeFiles)
         .pipe(traceur({sourceMaps: true, experimental: true}))
@@ -99,11 +107,12 @@ gulp.task('buildJs', function() {
         .pipe(gulp.dest('dist-jsbin/challenges'));
 });
 
-gulp.task('buildAll', ['buildJs', 'buildIndexFiles']);
+gulp.task('buildAll', ['buildJs', 'buildIndexFiles', 'css']);
 
 gulp.task('default', ['buildAll'], function() {
     gulp.watch(allJsFiles, ['buildJs']);
     gulp.watch(htmlFiles, ['buildIndexFiles']);
+    gulp.watch(cssFiles, ['css']);
 });
 
 

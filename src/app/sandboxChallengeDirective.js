@@ -15,13 +15,13 @@
                             <a ng-click="ctrl.goToGroup(group)" href="">{{group}}</a>\
                         </li>\
                     </ul>\
-                    <span ng-show="ctrl.loginStateDetermined && !ctrl.auth.user">\
+                    <span ng-if="ctrl.loginStateDetermined && !ctrl.auth.user">\
                         <span class="navbar-right">\
                             Login with:\
                             <span login-buttons></span>\
                         </span>\
                     </span>\
-                    <span ng-show="ctrl.loginStateDetermined && ctrl.auth.user">\
+                    <span ng-if="ctrl.loginStateDetermined && ctrl.auth.user">\
                         <span style="margin-top:5px" class="navbar-right">\
                             <a ng-click="ctrl.logout()" class="navbar-link" href="">Log out</a>\
                             <img class="navbar-img" height="40px" ng-src="{{ctrl.getPicFromUser(ctrl.auth.user)}}" alt="Profile"/>\

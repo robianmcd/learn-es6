@@ -5,7 +5,12 @@ var SetupCtrl = function($injector) {
 
     this.group = 'ES6';
     this.challengeId = 'destructuringMultipleReturns';
-    this.description = 'Use destructuring to assign the return value of ____ to val and err in a single line.';
+    this.description = '\
+    Use ES6 "Destructuring" to assign the return value of doubleANumber() to two variables by filling in the blank.\
+    <br/>\
+    Name the first variable <code>numIsValid</code>.\
+    <br/>\
+    Name the second variable <code>num</code>.';
 
     this.window = window;
 

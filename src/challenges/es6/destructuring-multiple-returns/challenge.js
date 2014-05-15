@@ -11,7 +11,12 @@ let doubleANumber = function(num) {
     return [valid, result];
 };
 
-//Assign the result of doubleANumber() to two variables called numIsValid and num in a single line of code:
+/*
+ TODO: Use ES6 "Destructuring" to assign the return value of
+ doubleANumber() to two variables by filling in the blank. 
+ Name the first variable "numIsValid".
+ Name the second variable "num".
+ */
 _____ = doubleANumber(21);
 
 if (numIsValid) {
