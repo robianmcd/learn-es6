@@ -1289,7 +1289,7 @@
         };
 
         if (this.leaderboard.then) {
-            this.leaderboard.then(onDataLoaded());
+            this.leaderboard.then(onDataLoaded);
         } else {
             onDataLoaded();
         }
