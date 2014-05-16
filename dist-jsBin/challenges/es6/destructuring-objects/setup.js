@@ -1,8 +1,6 @@
 var app = angular.module('theSandboxChallenge.setup', ['theSandboxChallenge', 'ui.bootstrap']);
 
 var SetupCtrl = function($injector) {
-    var _this = this;
-
     this.group = 'ES6';
     this.challengeId = 'destructuringObjects';
     this.description = 'Call <code>getAfricanSwallowStats()</code> and using destructuring assign the <code>name</code> ' +
@@ -11,15 +9,13 @@ var SetupCtrl = function($injector) {
         '<br/>' +
         'Note: you should be able to do all of this in one line.';
 
-    this.window = window;
-
     this.testCases = [
         $injector.instantiate(TestCase, {
             description: '<code>name</code> is defined',
             expression: 'name',
             expectedValue: 'African Swallow',
             getActualValue: function() {
-                return _this.window.name;
+                return name;
             }
         }),
         $injector.instantiate(TestCase, {
@@ -27,7 +23,7 @@ var SetupCtrl = function($injector) {
             expression: 'airSpeed',
             expectedValue: 11,
             getActualValue: function() {
-                return _this.window.airSpeed;
+                return airSpeed;
             }
         })
     ];

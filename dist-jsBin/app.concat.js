@@ -1255,7 +1255,7 @@
         try {
             return testCase.getActualValue();
         } catch (err) {
-            return err;
+            return err.toString();
         }
 
     };
@@ -1432,7 +1432,13 @@ var TestCase = function($sce, description, expression, expectedValue, getActualV
 };
 
 TestCase.prototype.isPassing = function() {
-    return this.getActualValue() === this.expectedValue;
+    try {
+        return this.getActualValue() === this.expectedValue;
+    }
+    catch(err) {
+        return false;
+    }
+
 };
 (function() {
     var configApp = angular.module('theSandboxChallenge.config');

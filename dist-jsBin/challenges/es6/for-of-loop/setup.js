@@ -7,15 +7,13 @@ var SetupCtrl = function($injector) {
         'them together. However it is also iterating over anything on Array.prototype. To fix this problem replace ' +
         'the for...in loop with a for...of loop.';
 
-    this.window = window;
-
     this.testCases = [
         $injector.instantiate(TestCase, {
             description: '<code>sumArray()</code> correctly adds numbers in an array',
             expression: 'sumArray([4,8,0])',
             expectedValue: 12,
             getActualValue: function() {
-                return window.sumArray([4,8,0]);
+                return sumArray([4,8,0]);
             }
         }),
         $injector.instantiate(TestCase, {
@@ -23,7 +21,7 @@ var SetupCtrl = function($injector) {
             expression: 'sumArray([1,2,3,5,7,11,13])',
             expectedValue: 42,
             getActualValue: function() {
-                return window.sumArray([1,2,3,5,7,11,13]);
+                return sumArray([1,2,3,5,7,11,13]);
             }
         }),
         $injector.instantiate(TestCase, {

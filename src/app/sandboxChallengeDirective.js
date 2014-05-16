@@ -190,7 +190,7 @@
         try {
             return testCase.getActualValue();
         } catch (err) {
-            return err;
+            return err.toString();
         }
 
     };
