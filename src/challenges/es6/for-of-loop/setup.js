@@ -11,7 +11,7 @@ var SetupCtrl = function($injector) {
 
     this.testCases = [
         $injector.instantiate(TestCase, {
-            description: 'sumArray() correctly adds numbers in an array',
+            description: '<code>sumArray()</code> correctly adds numbers in an array',
             expression: 'sumArray([4,8,0])',
             expectedValue: 12,
             getActualValue: function() {
@@ -19,7 +19,7 @@ var SetupCtrl = function($injector) {
             }
         }),
         $injector.instantiate(TestCase, {
-            description: 'sumArray() correctly adds numbers in another array',
+            description: '<code>sumArray()</code> correctly adds numbers in another array',
             expression: 'sumArray([1,2,3,5,7,11,13])',
             expectedValue: 42,
             getActualValue: function() {

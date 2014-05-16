@@ -14,7 +14,7 @@ var SetupCtrl = function($injector) {
 
     this.testCases = [
         $injector.instantiate(TestCase, {
-            description: 'numIsValid',
+            description: '<code>numIsValid</code> is defined',
             expression: 'numIsValid',
             expectedValue: true,
             getActualValue: function() {
@@ -22,7 +22,7 @@ var SetupCtrl = function($injector) {
             }
         }),
         $injector.instantiate(TestCase, {
-            description: 'num',
+            description: '<code>num</code> is defined',
             expression: 'num',
             expectedValue: 42,
             getActualValue: function() {
