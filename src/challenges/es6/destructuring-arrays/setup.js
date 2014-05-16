@@ -4,13 +4,11 @@ var SetupCtrl = function($injector) {
     var _this = this;
 
     this.group = 'ES6';
-    this.challengeId = 'destructuringMultipleReturns';
-    this.description = '\
-    Use ES6 "Destructuring" to assign the return value of doubleANumber() to two variables by filling in the blank.\
-    <br/>\
-    Name the first variable <code>numIsValid</code>.\
-    <br/>\
-    Name the second variable <code>num</code>.';
+    this.challengeId = 'destructuringArrays';
+    this.description = '<code>doubleANumber()</code> returns an array of two elements. Assign the first element ' +
+        'to a variable called <code>numIsValid</code> and the second element to a variable called <code>num</code>. ' +
+        '<br/>Using ES6 destructuring you should be able to call the function and make both variable declarations all ' +
+        'on the same line.';
 
     this.window = window;
 

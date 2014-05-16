@@ -13,9 +13,21 @@
                         jsBin: 'katum',
                         name: 'For...Of Loops'
                     },
-                    destructuringMultipleReturns: {
+                    destructuringArrays: {
                         jsBin: 'fidig',
-                        name: 'Destructuring: Multiple Returns'
+                        name: 'Destructuring: Arrays'
+                    },
+                    destructuringSwap: {
+                        jsBin: 'sapuyo',
+                        name: 'Destructuring: Swap'
+                    },
+                    destructuringObjects: {
+                        jsBin: 'gagebowu',
+                        name: 'Destructuring: Objects'
+                    },
+                    optionalParameters: {
+                        jsBin: 'befey',
+                        name: 'Optional Parameters'
                     }
                 },
                 Firebase: {
@@ -23,7 +35,7 @@
                 }
             },
             order: {
-                ES6: ['blockScopeLet', 'forOfLoops', 'destructuringMultipleReturns'],
+                ES6: ['blockScopeLet', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
                 Firebase: []
             }
 
