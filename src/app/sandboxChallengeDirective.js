@@ -69,7 +69,7 @@
                         {{testCase.expectedValue || \'undefined\'}}\
                     </td>\
                     <td ng-class="{danger: !testCase.isPassing(), \'text-danger\': !testCase.isPassing()}">\
-                        {{testCase.getActualValue() || \'undefined\'}}\
+                        {{ctrl.safelyGetTestCaseValue(testCase) || \'undefined\'}}\
                     </td>\
                 </tr>\
             </table>\
@@ -183,6 +183,15 @@
         this.auth.$getCurrentUser().then(function() {
             _this.loginStateDetermined = true;
         });
+
+    };
+
+    SandboxChallengeCtrl.prototype.safelyGetTestCaseValue = function(testCase) {
+        try {
+            return testCase.getActualValue();
+        } catch (err) {
+            return err;
+        }
 
     };
 
