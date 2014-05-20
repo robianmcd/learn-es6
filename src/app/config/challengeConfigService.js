@@ -9,6 +9,10 @@
                         jsBin: 'likum',
                         name: 'Block Scopes'
                     },
+                    arrowFunctions: {
+                        jsBin: 'mupone',
+                        name: 'Arrow Functions'
+                    },
                     forOfLoops: {
                         jsBin: 'katum',
                         name: 'For...Of Loops'
@@ -35,7 +39,7 @@
                 }
             },
             order: {
-                ES6: ['blockScopeLet', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
+                ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
                 Firebase: []
             }
 

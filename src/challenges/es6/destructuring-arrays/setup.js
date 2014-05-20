@@ -14,7 +14,7 @@ var SetupCtrl = function($injector) {
             expression: 'numIsValid',
             expectedValue: true,
             getActualValue: function() {
-                return numIsValid;
+                return window.numIsValid;
             }
         }),
         $injector.instantiate(TestCase, {
@@ -22,7 +22,7 @@ var SetupCtrl = function($injector) {
             expression: 'num',
             expectedValue: 42,
             getActualValue: function() {
-                return num;
+                return window.num;
             }
         })
     ];

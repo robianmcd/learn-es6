@@ -11,7 +11,7 @@ var SetupCtrl = function($injector) {
             expression: 'x',
             expectedValue: 2,
             getActualValue: function() {
-                return x;
+                return window.x;
             }
         }),
         $injector.instantiate(TestCase, {
@@ -19,7 +19,7 @@ var SetupCtrl = function($injector) {
             expression: 'y',
             expectedValue: 1,
             getActualValue: function() {
-                return y;
+                return window.y;
             }
         })
     ];

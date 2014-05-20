@@ -1,13 +1,9 @@
 var app = angular.module('theSandboxChallenge.setup', ['theSandboxChallenge']);
 
 var SetupCtrl = function($injector) {
-    var _this = this;
-
     this.group = 'ES6';
     this.challengeId = 'blockScopeLet';
     this.description = 'Change the code so that the temporary variables <code>i</code> and <code>iSquared</code> are not on the global scope.';
-
-    this.window = window;
 
     this.testCases = [
         $injector.instantiate(TestCase, {
@@ -15,7 +11,7 @@ var SetupCtrl = function($injector) {
             expression: 'i',
             expectedValue: undefined,
             getActualValue: function() {
-                return _this.window.i;
+                return window.i;
             }
         }),
         $injector.instantiate(TestCase, {
@@ -23,7 +19,7 @@ var SetupCtrl = function($injector) {
             expression: 'iSquared',
             expectedValue: undefined,
             getActualValue: function() {
-                return _this.window.iSquared;
+                return window.iSquared;
             }
         }),
         $injector.instantiate(TestCase, {
@@ -31,7 +27,7 @@ var SetupCtrl = function($injector) {
             expression: 'squareSum',
             expectedValue: 385,
             getActualValue: function() {
-                return _this.window.squareSum;
+                return window.squareSum;
             }
         })
     ];

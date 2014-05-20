@@ -15,7 +15,7 @@ var SetupCtrl = function($injector) {
             expression: 'name',
             expectedValue: 'African Swallow',
             getActualValue: function() {
-                return name;
+                return window.name;
             }
         }),
         $injector.instantiate(TestCase, {
@@ -23,7 +23,7 @@ var SetupCtrl = function($injector) {
             expression: 'airSpeed',
             expectedValue: 11,
             getActualValue: function() {
-                return airSpeed;
+                return window.airSpeed;
             }
         })
     ];
