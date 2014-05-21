@@ -1053,9 +1053,12 @@
 
     //language=HTML
     var loginButtonsHtml = '\
-        <span ng-click="ctrl.login(\'github\')" class="fa fa-github btn btn-default btn-fa navbar-btn"></span>\
-        <span ng-click="ctrl.login(\'google\')" class="fa fa-google-plus btn btn-default btn-fa navbar-btn"></span>\
-        <span ng-click="ctrl.login(\'facebook\')" class="fa fa-facebook-square btn btn-default btn-fa navbar-btn"></span>';
+        <span style="display:inline-block;">\
+            <span ng-click="ctrl.login(\'github\')" class="fa fa-github btn btn-default btn-fa navbar-btn btn-github"></span>\
+            <span ng-click="ctrl.login(\'google\')" class="fa fa-google-plus btn btn-default btn-fa navbar-btn btn-google"></span>\
+            <span ng-click="ctrl.login(\'facebook\')" class="fa fa-facebook-square btn btn-default btn-fa navbar-btn btn-facebook"></span>\
+        </span>';
+
 
     app.directive('loginButtons', function() {
         return {
@@ -1073,25 +1076,33 @@
             <div class="navbar navbar-default">\
                 <div class="container-fluid">\
                     <div class="navbar-header">\
-                        <span class="navbar-brand">Challenges:</span>\
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">\
+                            <span class="sr-only">Toggle navigation</span>\
+                            <span class="icon-bar"></span>\
+                            <span class="icon-bar"></span>\
+                            <span class="icon-bar"></span>\
+                        </button>\
+                        <span class="navbar-brand">The Sandbox Challenge</span>\
                     </div>\
-                    <ul class="nav navbar-nav">\
-                        <li ng-repeat="(group, challenge) in ctrl.challengeConfig.challenges" ng-class="{active: group === ctrl.group}">\
-                            <a ng-click="ctrl.goToGroup(group)" href="">{{group}}</a>\
-                        </li>\
-                    </ul>\
-                    <span ng-if="ctrl.loginStateDetermined && !ctrl.auth.user">\
-                        <span class="navbar-right">\
-                            Login with:\
-                            <span login-buttons></span>\
+                    <div class="collapse navbar-collapse" id="navbar-collapse">\
+                        <ul class="nav navbar-nav">\
+                            <li ng-repeat="(group, challenge) in ctrl.challengeConfig.challenges" ng-class="{active: group === ctrl.group}">\
+                                <a ng-click="ctrl.goToGroup(group)" href="">{{group}}</a>\
+                            </li>\
+                        </ul>\
+                        <span ng-if="ctrl.loginStateDetermined && !ctrl.auth.user">\
+                            <span class="navbar-right">\
+                                Login with:\
+                                <span login-buttons></span>\
+                            </span>\
                         </span>\
-                    </span>\
-                    <span ng-if="ctrl.loginStateDetermined && ctrl.auth.user">\
-                        <span style="margin-top:5px" class="navbar-right">\
-                            <a ng-click="ctrl.logout()" class="navbar-link" href="">Log out</a>\
-                            <img class="navbar-img" height="40px" ng-src="{{ctrl.getPicFromUser(ctrl.auth.user)}}" alt="Profile"/>\
+                        <span ng-if="ctrl.loginStateDetermined && ctrl.auth.user">\
+                            <span style="margin-top:5px" class="navbar-right">\
+                                <a ng-click="ctrl.logout()" class="navbar-link" href="">Log out</a>\
+                                <img class="navbar-img" height="40px" ng-src="{{ctrl.getPicFromUser(ctrl.auth.user)}}" alt="Profile"/>\
+                            </span>\
                         </span>\
-                    </span>\
+                    </div>\
                 </div>\
             </div>\
             <div style="margin: 20px 5px">\
@@ -1111,9 +1122,9 @@
                     </ul>\
                 </div>\
             </div>\
-            \
-            <p ng-bind-html="ctrl.description"></p>\
-            \
+            <div class="well">\
+                <p ng-bind-html="ctrl.description"></p>\
+            </div>\
             <h4>Test Cases</h4>\
             <table class="table">\
                 <tr>\
@@ -1140,10 +1151,12 @@
             </table>\
             \
             <div ng-show="ctrl.allPassing">\
-                Nice Job!\
-                <div ng-show="ctrl.loginStateDetermined && !ctrl.auth.user">\
-                    Share you accomplishments on the leader board by logging in:\
-                    <span login-buttons></span>\
+                <div class="alert alert-success">\
+                    <strong>Nice Job!</strong> You completed the <em>&OpenCurlyDoubleQuote;{{ctrl.challenges[ctrl.challengeId].name}}&CloseCurlyDoubleQuote;</em> challenge.\
+                </div>\
+                <div class="alert alert-warning alert-dismissable" ng-show="ctrl.loginStateDetermined && !ctrl.auth.user">\
+                        <strong>You are not logged in.</strong> Share you accomplishments on the leader board by logging in:\
+                        <span login-buttons></span>\
                 </div>\
                 <div ng-show="ctrl.getNextChallengeId()" style="text-align:center; margin-top:20px">\
                     <button ng-click="ctrl.goToChallenge(ctrl.getNextChallengeId())" class="btn btn-success btn-lg">\
@@ -1151,7 +1164,8 @@
                     </button>\
                 </div>\
             </div>\
-            <div>\
+            <hr/>\
+            <div style="margin-top: 40px">\
                 <h3>Leaderboard</h3>\
                 <div class="row">\
                     <div class="col-sm-6">\
