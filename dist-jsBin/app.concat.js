@@ -1422,7 +1422,14 @@ var TestCase = function($sce, description, expression, expectedValue, getActualV
 
 
     if (expression) {
-        this.expression = $sce.trustAsHtml('<code>' + expression + '</code>');
+        if (expression.indexOf('<br/>') > -1) {
+            this.expression = $sce.trustAsHtml('<pre>' + expression + '</pre>');
+        }
+        else {
+            this.expression = $sce.trustAsHtml('<code>' + expression + '</code>');
+        }
+
+
     }
     else {
         this.expression = $sce.trustAsHtml('n/a');
@@ -1442,7 +1449,7 @@ TestCase.prototype.isPassing = function() {
             return this.expectedValue === actualValue;
         }
     }
-    catch(err) {
+    catch (err) {
         return false;
     }
 };

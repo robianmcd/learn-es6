@@ -8,7 +8,7 @@ var SetupCtrl = function($injector) {
     this.testCases = [
         $injector.instantiate(TestCase, {
             description: '<code>filterList()</code> uses the default <code>regexFilter</code> stored in <code>myObj</code> to filter an input list',
-            expression: "myObj.filterList(['abcd', '123a', '1abc1'])",
+            expression: "myObj.filterList(<br/>&nbsp;&nbsp;['abcd', '123a', '1abc1']<br/>);",
             expectedValue: ['abcd', '1abc1'],
             getActualValue: function() {
                 return myObj.filterList(['abcd', '123a', '1abc1']);
@@ -16,7 +16,11 @@ var SetupCtrl = function($injector) {
         }),
         $injector.instantiate(TestCase, {
             description: '<code>filterList()</code> uses a custom <code>regexFilter</code> to filter an input list',
-            expression: "myObj.regexFilter = /123/; </code><br/><code> myObj.filterList(['1234', 'abcd', '12abc3']);",
+            expression: "" +
+                "myObj.regexFilter = /123/; <br/>" +
+                "myObj.filterList(<br/>" +
+                "&nbsp;&nbsp;['1234', 'abcd', '12abc3']<br/>" +
+                ");",
             expectedValue: ['1234'],
             getActualValue: function() {
                 var oldFilter = myObj.regexFilter;
