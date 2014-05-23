@@ -63,12 +63,24 @@ var getRelativePathFromFile = function(file) {
     return path.dirname(file.relative).replace(/\\/g, '/');
 };
 
+var getHtmlTemplate = function(file) {
+//console.log(path.dirname(file.path));
+
+    try {
+        return fs.readFileSync(path.dirname(file.path) + '/template.html').toString();
+    }
+    catch(err) {
+        return "";
+    }
+};
+
 gulp.task('buildIndexFiles', function() {
     gulp.src('src/**/setup.js')
         .pipe(replaceWithFile('src/indexTemplate.html', 'index.html'))
         .pipe(template({
             distFolder: jsBinDistUrl,
-            setupFolder: getRelativePathFromFile
+            setupFolder: getRelativePathFromFile,
+            htmlTemplate: getHtmlTemplate
         }))
         .pipe(gulp.dest('dist-jsBin'));
 
@@ -76,7 +88,8 @@ gulp.task('buildIndexFiles', function() {
         .pipe(replaceWithFile('src/indexTemplate.html', 'index.html'))
         .pipe(template({
             distFolder: '../../..',
-            setupFolder: getRelativePathFromFile
+            setupFolder: getRelativePathFromFile,
+            htmlTemplate: getHtmlTemplate
         }))
         .pipe(replace('</body>', '<script src="challenge.js"></script>\n</body>'))
         .pipe(replace('http://static.jsbin.com/js/vendor/traceur.js', 'https://traceur-compiler.googlecode.com/git/bin/traceur.js'))

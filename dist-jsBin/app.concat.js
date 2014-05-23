@@ -1051,6 +1051,21 @@
 (function() {
     var app = angular.module('theSandboxChallenge');
 
+    app.factory('findTranscludedScope', function ($q, $timeout) {
+        return function() {
+            var promiseMgr = $q.defer();
+
+            $timeout(function() {
+                promiseMgr.resolve(angular.element('#transclude').children().scope());
+            });
+
+            return promiseMgr.promise;
+        }
+    });
+})();
+(function() {
+    var app = angular.module('theSandboxChallenge');
+
     //language=HTML
     var loginButtonsHtml = '\
         <span style="display:inline-block;">\
@@ -1125,6 +1140,9 @@
             <div class="well">\
                 <p ng-bind-html="ctrl.description"></p>\
             </div>\
+            <div>\
+                <div id="transclude" ng-transclude></div>\
+            </div>\
             <h4>Test Cases</h4>\
             <table class="table">\
                 <tr>\
@@ -1142,15 +1160,15 @@
                     <td ng-bind-html="testCase.description"></td>\
                     <td ng-bind-html="testCase.expression"></td>\
                     <td>\
-                        {{testCase.expectedValue || \'undefined\'}}\
+                        {{testCase.getDisplayableExpectedValue()}}\
                     </td>\
                     <td ng-class="{danger: !testCase.isPassing(), \'text-danger\': !testCase.isPassing()}">\
-                        {{ctrl.safelyGetTestCaseValue(testCase) || \'undefined\'}}\
+                        {{testCase.getDisplayableActualValue()}}\
                     </td>\
                 </tr>\
             </table>\
             \
-            <div ng-show="ctrl.allPassing">\
+            <div ng-show="ctrl.getAllTestsPassing()">\
                 <div class="alert alert-success">\
                     <strong>Nice Job!</strong> You completed the <em>&OpenCurlyDoubleQuote;{{ctrl.challenges[ctrl.challengeId].name}}&CloseCurlyDoubleQuote;</em> challenge.\
                 </div>\
@@ -1220,12 +1238,10 @@
     app.directive('sandboxChallenge', function() {
         return {
             scope: {
-                group: '=',
-                challengeId: '=',
-                testCases: '=',
-                description: '='
+                options: '='
 
             },
+            transclude: true,
             controller: SandboxChallengeCtrl,
             controllerAs: 'ctrl',
             template: sandboxChallengeHtml
@@ -1234,10 +1250,14 @@
 
     var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce, challengeConfig) {
         var _this = this;
-        this.group = $scope.group;
-        this.challengeId = $scope.challengeId;
-        this.testCases = $scope.testCases;
-        this.description = $sce.trustAsHtml($scope.description);
+
+
+        //Extract options
+        this.group = $scope.options.group;
+        this.challengeId = $scope.options.challengeId;
+        this.testCases = $scope.options.testCases;
+        this.description = $sce.trustAsHtml($scope.options.description);
+
         this.challengeConfig = challengeConfig;
 
         this.challenges = challengeConfig.challenges[this.group];
@@ -1249,29 +1269,29 @@
         this.auth = $firebaseSimpleLogin(this.dbRef);
         $rootScope.$on("$firebaseSimpleLogin:login", this.onUserLoggedIn.bind(this));
 
-        this.allPassing = true;
-        for (var i = 0; i < this.testCases.length; i++) {
-            this.allPassing = this.allPassing && this.testCases[i].isPassing();
-        }
-
-        if (this.allPassing) {
-            this.challenges[this.challengeId].completed = true;
-        }
-
         this.loginStateDetermined = false;
         this.auth.$getCurrentUser().then(function() {
             _this.loginStateDetermined = true;
         });
 
+        this.allTestsPassedPreviously = false;
     };
 
-    SandboxChallengeCtrl.prototype.safelyGetTestCaseValue = function(testCase) {
-        try {
-            return testCase.getActualValue();
-        } catch (err) {
-            return err.toString();
+    SandboxChallengeCtrl.prototype.getAllTestsPassing = function() {
+        var allPassing = true;
+        for (var i = 0; i < this.testCases.length; i++) {
+
+            allPassing = allPassing && this.testCases[i].isPassing();
         }
 
+        if (allPassing && !this.allTestsPassedPreviously) {
+            this.allTestsPassedPreviously = true;
+            this.challenges[this.challengeId].completed = true;
+
+            //TODO: need to maybe update firebase here
+        }
+
+        return allPassing;
     };
 
     SandboxChallengeCtrl.prototype.login = function(provider) {
@@ -1296,7 +1316,8 @@
             _this.leaderboard[user.uid].challenges = _this.leaderboard[user.uid].challenges || {};
             var userChallenges = _this.leaderboard[user.uid].challenges;
 
-            if (_this.allPassing && !userChallenges[_this.challengeId]) {
+            //TODO: this stuff won't get hit if all tests start passing later
+            if (_this.getAllTestsPassing() && !userChallenges[_this.challengeId]) {
                 var now = new Date();
                 userChallenges[_this.challengeId] = now;
                 _this.leaderboard[user.uid].$priority = now;
@@ -1305,8 +1326,9 @@
             _this.leaderboard.$save(user.uid);
 
             for (var key in userChallenges) {
-                if (key in _this.challenges) {
-                    _this.challenges[key].completed = true;
+                var curChallenge = _this.challengeConfig.getChallenge(key);
+                if (curChallenge) {
+                    curChallenge.completed = true;
                 }
             }
         };
@@ -1334,7 +1356,7 @@
         var score = 0;
 
         for (var challengeId in userData.challenges) {
-            if (this.challenges.hasOwnProperty(challengeId)) {
+            if (this.challengeConfig.getChallenge(challengeId)) {
                 score++;
             }
         }
@@ -1347,11 +1369,11 @@
         var latestCompletedChallenge = null;
 
         for (var challengeId in userData.challenges) {
-            if (this.challenges.hasOwnProperty(challengeId)) {
-
+            var challenge = this.challengeConfig.getChallenge(challengeId);
+            if (challenge) {
                 if (!latestCompletedChallengeDate || userData.challenges[challengeId] > latestCompletedChallengeDate) {
                     latestCompletedChallengeDate = userData.challenges[challengeId];
-                    latestCompletedChallenge = this.challenges[challengeId];
+                    latestCompletedChallenge = challenge;
                 }
             }
         }
@@ -1431,8 +1453,10 @@
     }
 
 }());
-var TestCase = function($sce, description, expression, expectedValue, getActualValue) {
+var TestCase = function($sce, $q, description, expression, expectedValue, runTest) {
+    this.$q = $q;
     this.description = $sce.trustAsHtml(description);
+    this.runTestUnsafe = runTest;
 
 
     if (expression) {
@@ -1450,22 +1474,65 @@ var TestCase = function($sce, description, expression, expectedValue, getActualV
     }
 
     this.expectedValue = expectedValue;
-    this.getActualValue = getActualValue;
+};
+
+TestCase.prototype.runTest = function() {
+    var _this = this;
+
+    if (this.lastActualValue === undefined) {
+        this.lastActualValue = 'waiting';
+    }
+
+    var setLastValue = function(value) {
+        _this.lastActualValue = value;
+    };
+
+    try {
+        this.$q.when(this.runTestUnsafe()).then(setLastValue, setLastValue);
+    } catch (err) {
+        setLastValue(err);
+    }
+
+    return this.lastActualValue;
 };
 
 TestCase.prototype.isPassing = function() {
-    try {
-        var actualValue = this.getActualValue();
+    var actualValue = this.getActualValue();
 
-        if (this.expectedValue instanceof Array) {
-            return this._compareArrays(this.expectedValue, actualValue);
-        } else {
-            return this.expectedValue === actualValue;
-        }
+    if (this.expectedValue instanceof Array) {
+        return this._compareArrays(this.expectedValue, actualValue);
+
+    } else {
+        return this.expectedValue === actualValue;
     }
-    catch (err) {
-        return false;
+};
+
+TestCase.prototype.getActualValue = function() {
+    if(this.lastActualValue === undefined) {
+      this.runTest();
     }
+
+    return this.lastActualValue;
+};
+
+TestCase.prototype.getDisplayableValue = function(value) {
+    if (value === undefined) {
+        return 'undefined';
+
+    } else if (value instanceof Error) {
+        return value.toString();
+
+    } else {
+        return value;
+    }
+};
+
+TestCase.prototype.getDisplayableExpectedValue = function() {
+    return this.getDisplayableValue(this.expectedValue);
+};
+
+TestCase.prototype.getDisplayableActualValue = function() {
+    return this.getDisplayableValue(this.getActualValue());
 };
 
 //taken from http://stackoverflow.com/a/14853974/373655
@@ -1530,13 +1597,28 @@ TestCase.prototype._compareArrays = function(array1, array2) {
                         name: 'Optional Parameters'
                     }
                 },
-                Firebase: {
-
+                AngularFire: {
+                    firebaseSimpleLogin: {
+                        jsBin: '',
+                        name: 'Firebase Simple Login'
+                    }
                 }
             },
             order: {
                 ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
-                Firebase: []
+                AngularFire: ['firebaseSimpleLogin']
+            },
+
+            getChallenge: function(id) {
+                for (var group in this.challenges) {
+                    for (var challengeId in this.challenges[group]) {
+                        if (id === challengeId) {
+                            return this.challenges[group][challengeId];
+                        }
+                    }
+                }
+
+                return undefined;
             }
 
         }

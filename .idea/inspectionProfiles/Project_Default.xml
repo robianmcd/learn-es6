@@ -6,13 +6,14 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="6">
+          <list size="7">
             <item index="0" class="java.lang.String" itemvalue="test-cases" />
             <item index="1" class="java.lang.String" itemvalue="challenge-id" />
             <item index="2" class="java.lang.String" itemvalue="dropdown" />
             <item index="3" class="java.lang.String" itemvalue="description" />
             <item index="4" class="java.lang.String" itemvalue="ng-view" />
             <item index="5" class="java.lang.String" itemvalue="group" />
+            <item index="6" class="java.lang.String" itemvalue="options" />
           </list>
         </value>
       </option>

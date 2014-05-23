@@ -1,5 +1,7 @@
-var TestCase = function($sce, description, expression, expectedValue, getActualValue) {
+var TestCase = function($sce, $q, description, expression, expectedValue, runTest) {
+    this.$q = $q;
     this.description = $sce.trustAsHtml(description);
+    this.runTestUnsafe = runTest;
 
 
     if (expression) {
@@ -17,22 +19,65 @@ var TestCase = function($sce, description, expression, expectedValue, getActualV
     }
 
     this.expectedValue = expectedValue;
-    this.getActualValue = getActualValue;
+};
+
+TestCase.prototype.runTest = function() {
+    var _this = this;
+
+    if (this.lastActualValue === undefined) {
+        this.lastActualValue = 'waiting';
+    }
+
+    var setLastValue = function(value) {
+        _this.lastActualValue = value;
+    };
+
+    try {
+        this.$q.when(this.runTestUnsafe()).then(setLastValue, setLastValue);
+    } catch (err) {
+        setLastValue(err);
+    }
+
+    return this.lastActualValue;
 };
 
 TestCase.prototype.isPassing = function() {
-    try {
-        var actualValue = this.getActualValue();
+    var actualValue = this.getActualValue();
 
-        if (this.expectedValue instanceof Array) {
-            return this._compareArrays(this.expectedValue, actualValue);
-        } else {
-            return this.expectedValue === actualValue;
-        }
+    if (this.expectedValue instanceof Array) {
+        return this._compareArrays(this.expectedValue, actualValue);
+
+    } else {
+        return this.expectedValue === actualValue;
     }
-    catch (err) {
-        return false;
+};
+
+TestCase.prototype.getActualValue = function() {
+    if(this.lastActualValue === undefined) {
+      this.runTest();
     }
+
+    return this.lastActualValue;
+};
+
+TestCase.prototype.getDisplayableValue = function(value) {
+    if (value === undefined) {
+        return 'undefined';
+
+    } else if (value instanceof Error) {
+        return value.toString();
+
+    } else {
+        return value;
+    }
+};
+
+TestCase.prototype.getDisplayableExpectedValue = function() {
+    return this.getDisplayableValue(this.expectedValue);
+};
+
+TestCase.prototype.getDisplayableActualValue = function() {
+    return this.getDisplayableValue(this.getActualValue());
 };
 
 //taken from http://stackoverflow.com/a/14853974/373655

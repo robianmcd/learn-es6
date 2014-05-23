@@ -34,13 +34,28 @@
                         name: 'Optional Parameters'
                     }
                 },
-                Firebase: {
-
+                AngularFire: {
+                    firebaseSimpleLogin: {
+                        jsBin: '',
+                        name: 'Firebase Simple Login'
+                    }
                 }
             },
             order: {
                 ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
-                Firebase: []
+                AngularFire: ['firebaseSimpleLogin']
+            },
+
+            getChallenge: function(id) {
+                for (var group in this.challenges) {
+                    for (var challengeId in this.challenges[group]) {
+                        if (id === challengeId) {
+                            return this.challenges[group][challengeId];
+                        }
+                    }
+                }
+
+                return undefined;
             }
 
         }

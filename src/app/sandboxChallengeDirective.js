@@ -57,6 +57,9 @@
             <div class="well">\
                 <p ng-bind-html="ctrl.description"></p>\
             </div>\
+            <div>\
+                <div id="transclude" ng-transclude></div>\
+            </div>\
             <h4>Test Cases</h4>\
             <table class="table">\
                 <tr>\
@@ -74,15 +77,15 @@
                     <td ng-bind-html="testCase.description"></td>\
                     <td ng-bind-html="testCase.expression"></td>\
                     <td>\
-                        {{testCase.expectedValue || \'undefined\'}}\
+                        {{testCase.getDisplayableExpectedValue()}}\
                     </td>\
                     <td ng-class="{danger: !testCase.isPassing(), \'text-danger\': !testCase.isPassing()}">\
-                        {{ctrl.safelyGetTestCaseValue(testCase) || \'undefined\'}}\
+                        {{testCase.getDisplayableActualValue()}}\
                     </td>\
                 </tr>\
             </table>\
             \
-            <div ng-show="ctrl.allPassing">\
+            <div ng-show="ctrl.getAllTestsPassing()">\
                 <div class="alert alert-success">\
                     <strong>Nice Job!</strong> You completed the <em>&OpenCurlyDoubleQuote;{{ctrl.challenges[ctrl.challengeId].name}}&CloseCurlyDoubleQuote;</em> challenge.\
                 </div>\
@@ -152,12 +155,10 @@
     app.directive('sandboxChallenge', function() {
         return {
             scope: {
-                group: '=',
-                challengeId: '=',
-                testCases: '=',
-                description: '='
+                options: '='
 
             },
+            transclude: true,
             controller: SandboxChallengeCtrl,
             controllerAs: 'ctrl',
             template: sandboxChallengeHtml
@@ -166,10 +167,14 @@
 
     var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce, challengeConfig) {
         var _this = this;
-        this.group = $scope.group;
-        this.challengeId = $scope.challengeId;
-        this.testCases = $scope.testCases;
-        this.description = $sce.trustAsHtml($scope.description);
+
+
+        //Extract options
+        this.group = $scope.options.group;
+        this.challengeId = $scope.options.challengeId;
+        this.testCases = $scope.options.testCases;
+        this.description = $sce.trustAsHtml($scope.options.description);
+
         this.challengeConfig = challengeConfig;
 
         this.challenges = challengeConfig.challenges[this.group];
@@ -181,29 +186,29 @@
         this.auth = $firebaseSimpleLogin(this.dbRef);
         $rootScope.$on("$firebaseSimpleLogin:login", this.onUserLoggedIn.bind(this));
 
-        this.allPassing = true;
-        for (var i = 0; i < this.testCases.length; i++) {
-            this.allPassing = this.allPassing && this.testCases[i].isPassing();
-        }
-
-        if (this.allPassing) {
-            this.challenges[this.challengeId].completed = true;
-        }
-
         this.loginStateDetermined = false;
         this.auth.$getCurrentUser().then(function() {
             _this.loginStateDetermined = true;
         });
 
+        this.allTestsPassedPreviously = false;
     };
 
-    SandboxChallengeCtrl.prototype.safelyGetTestCaseValue = function(testCase) {
-        try {
-            return testCase.getActualValue();
-        } catch (err) {
-            return err.toString();
+    SandboxChallengeCtrl.prototype.getAllTestsPassing = function() {
+        var allPassing = true;
+        for (var i = 0; i < this.testCases.length; i++) {
+
+            allPassing = allPassing && this.testCases[i].isPassing();
         }
 
+        if (allPassing && !this.allTestsPassedPreviously) {
+            this.allTestsPassedPreviously = true;
+            this.challenges[this.challengeId].completed = true;
+
+            //TODO: need to maybe update firebase here
+        }
+
+        return allPassing;
     };
 
     SandboxChallengeCtrl.prototype.login = function(provider) {
@@ -228,7 +233,8 @@
             _this.leaderboard[user.uid].challenges = _this.leaderboard[user.uid].challenges || {};
             var userChallenges = _this.leaderboard[user.uid].challenges;
 
-            if (_this.allPassing && !userChallenges[_this.challengeId]) {
+            //TODO: this stuff won't get hit if all tests start passing later
+            if (_this.getAllTestsPassing() && !userChallenges[_this.challengeId]) {
                 var now = new Date();
                 userChallenges[_this.challengeId] = now;
                 _this.leaderboard[user.uid].$priority = now;
@@ -237,8 +243,9 @@
             _this.leaderboard.$save(user.uid);
 
             for (var key in userChallenges) {
-                if (key in _this.challenges) {
-                    _this.challenges[key].completed = true;
+                var curChallenge = _this.challengeConfig.getChallenge(key);
+                if (curChallenge) {
+                    curChallenge.completed = true;
                 }
             }
         };
@@ -266,7 +273,7 @@
         var score = 0;
 
         for (var challengeId in userData.challenges) {
-            if (this.challenges.hasOwnProperty(challengeId)) {
+            if (this.challengeConfig.getChallenge(challengeId)) {
                 score++;
             }
         }
@@ -279,11 +286,11 @@
         var latestCompletedChallenge = null;
 
         for (var challengeId in userData.challenges) {
-            if (this.challenges.hasOwnProperty(challengeId)) {
-
+            var challenge = this.challengeConfig.getChallenge(challengeId);
+            if (challenge) {
                 if (!latestCompletedChallengeDate || userData.challenges[challengeId] > latestCompletedChallengeDate) {
                     latestCompletedChallengeDate = userData.challenges[challengeId];
-                    latestCompletedChallenge = this.challenges[challengeId];
+                    latestCompletedChallenge = challenge;
                 }
             }
         }

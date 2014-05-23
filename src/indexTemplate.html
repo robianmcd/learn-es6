@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="theSandboxChallenge.setup" ng-cloak ng-controller="SetupCtrl as ctrl">
+<html ng-app="theSandboxChallenge.setup" ng-cloak ng-controller="SetupCtrl as setupCtrl">
 <head>
     <meta charset="utf-8"/>
     <script src="http://static.jsbin.com/js/vendor/traceur.js"></script>
@@ -8,13 +8,17 @@
     <link rel="stylesheet" href="<%= distFolder %>/styles.css"/>
 </head>
 <body>
-<div class="container">
-    <div sandbox-challenge group="ctrl.group"
-         challenge-id="ctrl.challengeId"
-         test-cases="ctrl.testCases"
-         description="ctrl.description">
-    </div>
-</div>
+<div class="container"><div sandbox-challenge options="setupCtrl.options">
+    <!--↓↓↓ Make your changes BELOW here ↓↓↓-->
+
+
+
+    <%= htmlTemplate %>
+
+
+
+    <!--↑↑↑ Make your changes ABOVE here ↑↑↑-->
+</div></div>
 
 <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
