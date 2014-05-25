@@ -9,10 +9,9 @@ var MyCtrl = function($firebaseSimpleLogin) {
 };
 
 MyCtrl.prototype.login = function() {
-    /*
-     TODO: use the loginObj to log in using either 'github',
-     'google', or 'facebook' as the provider.
-     */
+    this.loginObj.$login('github');
+};
 
-    this.loginObj.$login('google');
+MyCtrl.prototype.getUser = function() {
+    //TODO: return the user object that gets created when you login.
 };

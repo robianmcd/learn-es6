@@ -57,8 +57,9 @@
             <div class="well">\
                 <p ng-bind-html="ctrl.description"></p>\
             </div>\
-            <div>\
-                <div id="transclude" ng-transclude></div>\
+            <div ng-show="ctrl.showOutput">\
+                <h4>Output</h4>\
+                <div class="output" id="transclude" ng-transclude></div>\
             </div>\
             <h4>Test Cases</h4>\
             <table class="table">\
@@ -77,10 +78,20 @@
                     <td ng-bind-html="testCase.description"></td>\
                     <td ng-bind-html="testCase.expression"></td>\
                     <td>\
-                        {{testCase.getDisplayableExpectedValue()}}\
+                        <div ng-if="testCase.wrapExpectedValueInPre">\
+                            <pre>{{testCase.getDisplayableExpectedValue()}}</pre>\
+                        </div>\
+                        <div ng-if="!testCase.wrapExpectedValueInPre">\
+                            {{testCase.getDisplayableExpectedValue()}}\
+                        </div>\
                     </td>\
                     <td ng-class="{danger: !testCase.isPassing(), \'text-danger\': !testCase.isPassing()}">\
-                        {{testCase.getDisplayableActualValue()}}\
+                        <div ng-if="testCase.wrapActualValueInPre">\
+                            <pre>{{testCase.getDisplayableActualValue()}}</pre>\
+                        </div>\
+                        <div ng-if="!testCase.wrapActualValueInPre">\
+                            {{testCase.getDisplayableActualValue()}}\
+                        </div>\
                     </td>\
                 </tr>\
             </table>\
@@ -99,7 +110,6 @@
                     </button>\
                 </div>\
             </div>\
-            <hr/>\
             <div style="margin-top: 40px">\
                 <h3>Leaderboard</h3>\
                 <div class="row">\
@@ -165,15 +175,17 @@
         }
     });
 
-    var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce, challengeConfig) {
+    var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce, $q, challengeConfig) {
         var _this = this;
 
+        this.$q = $q;
 
         //Extract options
         this.group = $scope.options.group;
         this.challengeId = $scope.options.challengeId;
         this.testCases = $scope.options.testCases;
         this.description = $sce.trustAsHtml($scope.options.description);
+        this.showOutput = $scope.options.showOutput === true;
 
         this.challengeConfig = challengeConfig;
 
@@ -191,7 +203,18 @@
             _this.loginStateDetermined = true;
         });
 
-        this.allTestsPassedPreviously = false;
+        this.allTestsPassingPromiseMgr = $q.defer();
+        this.firebaseDataLoadedPromiseMgr = $q.defer();
+
+        this.leaderboard.then(function() {
+            _this.firebaseDataLoadedPromiseMgr.resolve();
+        });
+
+
+    };
+
+    SandboxChallengeCtrl.prototype.uploadChallengeCompleted = function() {
+
     };
 
     SandboxChallengeCtrl.prototype.getAllTestsPassing = function() {
@@ -201,18 +224,20 @@
             allPassing = allPassing && this.testCases[i].isPassing();
         }
 
-        if (allPassing && !this.allTestsPassedPreviously) {
-            this.allTestsPassedPreviously = true;
+        if (allPassing) {
             this.challenges[this.challengeId].completed = true;
-
-            //TODO: need to maybe update firebase here
+            this.allTestsPassingPromiseMgr.resolve();
         }
 
         return allPassing;
     };
 
     SandboxChallengeCtrl.prototype.login = function(provider) {
-        this.auth.$login(provider);
+        if (this.challengeId === 'firebaseSimpleLogin') {
+            alert('Nice try. Write your own login function for this challenge.');
+        } else {
+            this.auth.$login(provider);
+        }
     };
 
     SandboxChallengeCtrl.prototype.logout = function() {
@@ -221,40 +246,45 @@
 
     SandboxChallengeCtrl.prototype.onUserLoggedIn = function(event, user) {
         var _this = this;
-        this.leaderboard[user.uid] = this.leaderboard[user.uid] || {};
+        var leaderboardUser = _this.leaderboard.$child(user.uid);
 
-        //Wait for the data to load from firebase incase it hasn't already been loaded
-        var onDataLoaded = function() {
-            _this.leaderboard[user.uid].profile = {
-                name: user.displayName,
-                pic: _this.getPicFromUser(user)
-            };
+        this.$q.all([
+            this.allTestsPassingPromiseMgr.promise,
+            this.firebaseDataLoadedPromiseMgr.promise]
+        ).then(function() {
+            //Make sure the user is still logged in as the same user they were when onUserLoggedIn got called.
+            if (_this.auth.user === user) {
+                var userChallenges = leaderboardUser.$child('challenges');
 
-            _this.leaderboard[user.uid].challenges = _this.leaderboard[user.uid].challenges || {};
-            var userChallenges = _this.leaderboard[user.uid].challenges;
+                if (!userChallenges[_this.challengeId]) {
+                    var now = new Date();
 
-            //TODO: this stuff won't get hit if all tests start passing later
-            if (_this.getAllTestsPassing() && !userChallenges[_this.challengeId]) {
-                var now = new Date();
-                userChallenges[_this.challengeId] = now;
-                _this.leaderboard[user.uid].$priority = now;
+                    var completedChallenge = {};
+                    completedChallenge[_this.challengeId] = now;
+                    userChallenges.$update(completedChallenge);
+
+                    leaderboardUser.$update({$priority: now});
+
+                }
             }
+        });
 
-            _this.leaderboard.$save(user.uid);
+        var profile = {
+            name: user.displayName,
+            pic: _this.getPicFromUser(user)
+        };
+        leaderboardUser.$update({profile: profile});
 
-            for (var key in userChallenges) {
+
+        this.firebaseDataLoadedPromiseMgr.promise.then(function() {
+            for (var key in leaderboardUser.challenges) {
                 var curChallenge = _this.challengeConfig.getChallenge(key);
                 if (curChallenge) {
                     curChallenge.completed = true;
                 }
             }
-        };
+        });
 
-        if (this.leaderboard.then) {
-            this.leaderboard.then(onDataLoaded);
-        } else {
-            onDataLoaded();
-        }
     };
 
     SandboxChallengeCtrl.prototype.getPicFromUser = function(user) {

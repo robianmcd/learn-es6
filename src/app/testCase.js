@@ -1,11 +1,16 @@
 var TestCase = function($sce, $q, description, expression, expectedValue, runTest) {
+    var _this = this;
+
     this.$q = $q;
+    this.$sce = $sce;
     this.description = $sce.trustAsHtml(description);
     this.runTestUnsafe = runTest;
 
+    this.wrapExpectedValueInPre = false;
+    this.wrapActualValueInPre = false;
 
     if (expression) {
-        if (expression.indexOf('<br/>') > -1) {
+        if (expression.indexOf('<br/>') > -1 || expression.indexOf('\n') > -1) {
             this.expression = $sce.trustAsHtml('<pre>' + expression + '</pre>');
         }
         else {
@@ -18,22 +23,27 @@ var TestCase = function($sce, $q, description, expression, expectedValue, runTes
         this.expression = $sce.trustAsHtml('n/a');
     }
 
-    this.expectedValue = expectedValue;
+    this.testHasRun = false;
+    this.lastActualValue = '<Waiting>';
+    this.expectedValue = '';
+
+    var setExpectedValue = function(value) {
+        _this.expectedValue = value;
+    };
+
+    $q.when(expectedValue).then(setExpectedValue, setExpectedValue, setExpectedValue);
 };
 
 TestCase.prototype.runTest = function() {
     var _this = this;
-
-    if (this.lastActualValue === undefined) {
-        this.lastActualValue = 'waiting';
-    }
+    this.testHasRun = true;
 
     var setLastValue = function(value) {
         _this.lastActualValue = value;
     };
 
     try {
-        this.$q.when(this.runTestUnsafe()).then(setLastValue, setLastValue);
+        this.$q.when(this.runTestUnsafe()).then(setLastValue, setLastValue, setLastValue);
     } catch (err) {
         setLastValue(err);
     }
@@ -53,31 +63,42 @@ TestCase.prototype.isPassing = function() {
 };
 
 TestCase.prototype.getActualValue = function() {
-    if(this.lastActualValue === undefined) {
-      this.runTest();
+    if (this.testHasRun === false) {
+        this.runTest();
     }
 
     return this.lastActualValue;
 };
 
-TestCase.prototype.getDisplayableValue = function(value) {
+TestCase.prototype.getDisplayableValue = function(value, setWrapInPre) {
+    var displayString;
+    setWrapInPre(false);
+
     if (value === undefined) {
-        return 'undefined';
+        displayString = 'undefined';
 
     } else if (value instanceof Error) {
-        return value.toString();
+        displayString = value.toString();
+
+    } else if (typeof value === 'object') {
+        setWrapInPre(true);
+        displayString = this.getPrettyObjectSummary(value);
 
     } else {
-        return value;
+        displayString = String(value);
     }
+
+    return displayString;
 };
 
 TestCase.prototype.getDisplayableExpectedValue = function() {
-    return this.getDisplayableValue(this.expectedValue);
+    var _this = this;
+    return this.getDisplayableValue(this.expectedValue, function(wrap) {_this.wrapExpectedValueInPre = wrap});
 };
 
 TestCase.prototype.getDisplayableActualValue = function() {
-    return this.getDisplayableValue(this.getActualValue());
+    var _this = this;
+    return this.getDisplayableValue(this.getActualValue(), function(wrap) {_this.wrapActualValueInPre = wrap});
 };
 
 //taken from http://stackoverflow.com/a/14853974/373655
@@ -105,4 +126,42 @@ TestCase.prototype._compareArrays = function(array1, array2) {
         }
     }
     return true;
+};
+
+TestCase.prototype.getPrettyObjectSummary = function(obj) {
+    var maxProps = 4;
+    var maxLineLength = 20;
+
+    var numProps = 0;
+    var output = '{\n';
+    for (var key in obj) {
+        if (numProps > 0) {
+            output += ',\n';
+        }
+
+        if (numProps >= maxProps) {
+            output += '  ...\n';
+            break;
+        }
+
+        if (obj.hasOwnProperty(key)) {
+            numProps += 1;
+            output += '  ';
+
+            var newLine;
+            if (typeof obj[key] === 'function') {
+                newLine = key + ': ' + obj[key].toString();
+            } else {
+                newLine = key + ': ' + JSON.stringify(obj[key]);
+            }
+
+            if (newLine.length > maxLineLength) {
+                newLine = newLine.substring(0, maxLineLength - 3) + '...';
+            }
+
+            output += newLine;
+        }
+    }
+
+    return output + '}';
 };

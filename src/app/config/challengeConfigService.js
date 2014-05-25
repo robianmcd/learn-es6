@@ -38,12 +38,17 @@
                     firebaseSimpleLogin: {
                         jsBin: '',
                         name: 'Firebase Simple Login'
+                    },
+                    userProfile: {
+                        jsBin: '',
+                        name: 'User Profile',
+                        view: 'html,js,output'
                     }
                 }
             },
             order: {
                 ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
-                AngularFire: ['firebaseSimpleLogin']
+                AngularFire: ['firebaseSimpleLogin', 'userProfile']
             },
 
             getChallenge: function(id) {
