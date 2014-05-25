@@ -15,6 +15,12 @@ var jsSetupFiles = 'src/challenges/**/setup.js';
 //We need to specift the order of files that need to be loaded before other files. Files that define angular modules
 //need to be loaded before files that use the modules.
 var jsAppFiles = [
+    'src/app/lib/jquery/*.js',
+    'src/app/lib/bootstrap-3.1.1/*.js',
+    'src/app/lib/angular-1.2.16/*.js',
+    'src/app/lib/angular-ui-bootstrap-0.10.0/*.js',
+    'src/app/lib/firebase-1.0.11/*.js',
+    'src/app/lib/firebase-simple-login-1.3.2/*.js',
     'src/app/lib/**/*.js',
     'src/app/config/configApp.js',
     'src/app/app.js',
