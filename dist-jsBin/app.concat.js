@@ -26487,62 +26487,62 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
     };
 })();
 
-(function() {
-    angular.module('theSandboxChallenge.config', []);
+(function () {
+  angular.module('theSandboxChallenge.config', []);
 }());
 
 
 
-(function() {
+(function () {
 
-    var app = angular.module('theSandboxChallenge', ['theSandboxChallenge.config', 'firebase', 'ui.bootstrap']);
+  var app = angular.module('theSandboxChallenge', ['theSandboxChallenge.config', 'firebase', 'ui.bootstrap']);
 
-    app.config(function($sceDelegateProvider) {
-        $sceDelegateProvider.resourceUrlWhitelist([
-            // Allow same origin resource loads.
-            'self',
-            // Allow loading from github pages
-            'http://robianmcd.github.io/the-sandbox-challenge/**']);
-    });
+  app.config(function ($sceDelegateProvider) {
+    $sceDelegateProvider.resourceUrlWhitelist([
+      // Allow same origin resource loads.
+      'self',
+      // Allow loading from github pages
+      'http://robianmcd.github.io/the-sandbox-challenge/**']);
+  });
 
 }());
 
 
-(function() {
-    var app = angular.module('theSandboxChallenge');
+(function () {
+  var app = angular.module('theSandboxChallenge');
 
-    app.factory('findTranscludedScope', function ($q, $timeout) {
-        return function() {
-            var promiseMgr = $q.defer();
+  app.factory('findTranscludedScope', function ($q, $timeout) {
+    return function () {
+      var promiseMgr = $q.defer();
 
-            $timeout(function() {
-                promiseMgr.resolve(angular.element('#transclude').children().scope());
-            });
+      $timeout(function () {
+        promiseMgr.resolve(angular.element('#transclude').children().scope());
+      });
 
-            return promiseMgr.promise;
+      return promiseMgr.promise;
+    }
+  });
+})();
+(function () {
+  var app = angular.module('theSandboxChallenge');
+
+  app.factory('htmlUtils', function () {
+    return {
+      buildNewTabLink: function (href, text) {
+        if (!text) {
+          text = href;
         }
-    });
+
+        return '<a href="' + href + '" target="_blank">' + text + '</a>';
+      }
+    };
+  });
 })();
-(function() {
-    var app = angular.module('theSandboxChallenge');
+(function () {
+  var app = angular.module('theSandboxChallenge');
 
-    app.factory('htmlUtils', function() {
-        return {
-            buildNewTabLink: function(href, text) {
-                if (!text) {
-                    text = href;
-                }
-
-                return '<a href="' + href + '" target="_blank">'+ text + '</a>';
-            }
-        };
-    });
-})();
-(function() {
-    var app = angular.module('theSandboxChallenge');
-
-    //language=HTML
-    var loginButtonsHtml = '\
+  //language=HTML
+  var loginButtonsHtml = '\
         <span style="display:inline-block;">\
             <span ng-click="ctrl.login(\'github\')" class="fa fa-github btn btn-default btn-fa navbar-btn btn-github"></span>\
             <span ng-click="ctrl.login(\'google\')" class="fa fa-google-plus btn btn-default btn-fa navbar-btn btn-google"></span>\
@@ -26550,38 +26550,38 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
         </span>';
 
 
-    app.directive('loginButtons', function() {
-        return {
-            template: loginButtonsHtml
+  app.directive('loginButtons', function () {
+    return {
+      template: loginButtonsHtml
+    }
+  });
+})();
+(function () {
+  var app = angular.module('theSandboxChallenge');
+
+  app.factory('myFirebaseUtils', function () {
+    return {
+      currentChallengeId: 'theSandboxChallenge',
+      setCurrentChallenge: function (challengeId) {
+        this.currentChallengeId = challengeId;
+      },
+      getBaseUrl: function () {
+        if (!localStorage.firebaseKey) {
+          //Generates 5 character random string [a-z0-9]
+          localStorage.firebaseKey = Math.random().toString(36).substring(2, 7);
         }
-    });
+
+        return 'https://' + this.currentChallengeId + '-' + localStorage.firebaseKey + '.firebaseio-demo.com';
+      }
+    };
+  });
 })();
-(function() {
-    var app = angular.module('theSandboxChallenge');
+(function () {
 
-    app.factory('myFirebaseUtils', function() {
-        return {
-            currentChallengeId: 'theSandboxChallenge',
-            setCurrentChallenge: function(challengeId) {
-                this.currentChallengeId = challengeId;
-            },
-            getBaseUrl: function() {
-                if (!localStorage.firebaseKey) {
-                    //Generates 5 character random string [a-z0-9]
-                    localStorage.firebaseKey = Math.random().toString(36).substring(2, 7);
-                }
+  var app = angular.module('theSandboxChallenge');
 
-                return 'https://' + this.currentChallengeId + '-' + localStorage.firebaseKey + '.firebaseio-demo.com';
-            }
-        };
-    });
-})();
-(function() {
-
-    var app = angular.module('theSandboxChallenge');
-
-    //language=HTML
-    var sandboxChallengeHtml = '\
+  //language=HTML
+  var sandboxChallengeHtml = '\
         <div style="margin-top:30px">\
             <div class="navbar navbar-default">\
                 <div class="container-fluid">\
@@ -26740,494 +26740,498 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
         </div>\
         ';
 
-    app.directive('sandboxChallenge', function() {
-        return {
-            scope: {
-                options: '='
+  app.directive('sandboxChallenge', function () {
+    return {
+      scope: {
+        options: '='
 
-            },
-            transclude: true,
-            controller: SandboxChallengeCtrl,
-            controllerAs: 'ctrl',
-            template: sandboxChallengeHtml
-        }
-    });
-
-    var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce, $q, challengeConfig) {
-        var _this = this;
-
-        this.$q = $q;
-
-        //Extract options
-        this.group = $scope.options.group;
-        this.challengeId = $scope.options.challengeId;
-        this.testCases = $scope.options.testCases;
-        this.description = $sce.trustAsHtml($scope.options.description);
-        this.showOutput = $scope.options.showOutput === true;
-
-        this.challengeConfig = challengeConfig;
-
-        this.challenges = challengeConfig.challenges[this.group];
-        this.challengeOrder = challengeConfig.order[this.group];
-
-        //setup firebase connection
-        this.dbRef = new Firebase('https://sandbox-challenge.firebaseio.com');
-        this.leaderboard = $firebase(this.dbRef.child('leaderboard'));
-        this.auth = $firebaseSimpleLogin(this.dbRef);
-        $scope.$on("$firebaseSimpleLogin:login", this.onUserLoggedIn.bind(this));
-
-        this.loginStateDetermined = false;
-        this.auth.$getCurrentUser().then(function() {
-            _this.loginStateDetermined = true;
-        });
-
-        this.allTestsPassingPromiseMgr = $q.defer();
-        this.firebaseDataLoadedPromiseMgr = $q.defer();
-
-        this.leaderboard.then(function() {
-            _this.firebaseDataLoadedPromiseMgr.resolve();
-        });
-
-
-    };
-
-    SandboxChallengeCtrl.prototype.uploadChallengeCompleted = function() {
-
-    };
-
-    SandboxChallengeCtrl.prototype.getAllTestsPassing = function() {
-        var allPassing = true;
-        for (var i = 0; i < this.testCases.length; i++) {
-
-            allPassing = allPassing && this.testCases[i].isPassing();
-        }
-
-        if (allPassing) {
-            this.challenges[this.challengeId].completed = true;
-            this.allTestsPassingPromiseMgr.resolve();
-        }
-
-        return allPassing;
-    };
-
-    SandboxChallengeCtrl.prototype.login = function(provider) {
-        if (this.challengeId === 'firebaseSimpleLogin') {
-            alert('Nice try. Write your own login function for this challenge.');
-        } else {
-            this.auth.$login(provider);
-        }
-    };
-
-    SandboxChallengeCtrl.prototype.logout = function() {
-        this.auth.$logout();
-    };
-
-    SandboxChallengeCtrl.prototype.onUserLoggedIn = function(event, user) {
-        var _this = this;
-        var leaderboardUser = _this.leaderboard.$child(user.uid);
-
-        this.$q.all([
-                this.allTestsPassingPromiseMgr.promise,
-                this.firebaseDataLoadedPromiseMgr.promise]
-        ).then(function() {
-                //Make sure the user is still logged in as the same user they were when onUserLoggedIn got called.
-                if (_this.auth.user === user) {
-                    var userChallenges = leaderboardUser.$child('challenges');
-
-                    if (!userChallenges[_this.challengeId]) {
-                        var now = new Date();
-
-                        var completedChallenge = {};
-                        completedChallenge[_this.challengeId] = now;
-                        userChallenges.$update(completedChallenge);
-
-                        leaderboardUser.$update({$priority: now});
-
-                    }
-                }
-            });
-
-        var profile = {
-            name: user.displayName,
-            pic: _this.getPicFromUser(user)
-        };
-        leaderboardUser.$update({profile: profile});
-
-
-        this.firebaseDataLoadedPromiseMgr.promise.then(function() {
-            for (var key in leaderboardUser.challenges) {
-                var curChallenge = _this.challengeConfig.getChallenge(key);
-                if (curChallenge) {
-                    curChallenge.completed = true;
-                }
-            }
-        });
-
-    };
-
-    SandboxChallengeCtrl.prototype.getPicFromUser = function(user) {
-        switch (user.provider) {
-            case 'github':
-                return user.thirdPartyUserData.avatar_url;
-            case 'google':
-                return user.thirdPartyUserData.picture;
-            case 'facebook':
-                return 'https://graph.facebook.com/' + user.id + '/picture';
-        }
-
-    };
-
-    SandboxChallengeCtrl.prototype.getScoreFromUserData = function(userData) {
-        var score = 0;
-
-        for (var challengeId in userData.challenges) {
-            if (this.challengeConfig.getChallenge(challengeId)) {
-                score++;
-            }
-        }
-
-        return score;
-    };
-
-    SandboxChallengeCtrl.prototype.getLastCompletedChallengeFromUserData = function(userData) {
-        var latestCompletedChallengeDate = null;
-        var latestCompletedChallenge = null;
-
-        for (var challengeId in userData.challenges) {
-            var challenge = this.challengeConfig.getChallenge(challengeId);
-            if (challenge) {
-                if (!latestCompletedChallengeDate || userData.challenges[challengeId] > latestCompletedChallengeDate) {
-                    latestCompletedChallengeDate = userData.challenges[challengeId];
-                    latestCompletedChallenge = challenge;
-                }
-            }
-        }
-
-        //This shouldn't really come up but could if someone logs in before they complete a challenge.
-        if (!latestCompletedChallengeDate) {
-            return null;
-        }
-
-        var latestChallengeWithDate = angular.copy(latestCompletedChallenge);
-        latestChallengeWithDate.date = latestCompletedChallengeDate;
-
-        return latestChallengeWithDate;
-    };
-
-
-    //taken from http://stackoverflow.com/a/3177838/373655
-    SandboxChallengeCtrl.prototype.timeSince = function(date) {
-        if (typeof date !== 'object') {
-            date = new Date(date);
-        }
-
-        var seconds = Math.floor((new Date() - date) / 1000);
-        var intervalType;
-
-        var interval = Math.floor(seconds / 31536000);
-        if (interval >= 1) {
-            intervalType = 'year';
-        } else {
-            interval = Math.floor(seconds / 2592000);
-            if (interval >= 1) {
-                intervalType = 'month';
-            } else {
-                interval = Math.floor(seconds / 86400);
-                if (interval >= 1) {
-                    intervalType = 'day';
-                } else {
-                    interval = Math.floor(seconds / 3600);
-                    if (interval >= 1) {
-                        intervalType = "hour";
-                    } else {
-                        interval = Math.floor(seconds / 60);
-                        if (interval >= 1) {
-                            intervalType = "minute";
-                        } else {
-                            intervalType = "second";
-                        }
-                    }
-                }
-            }
-        }
-
-        if (interval > 1) {
-            intervalType += 's';
-        }
-
-        return interval + ' ' + intervalType;
-    };
-
-    SandboxChallengeCtrl.prototype.goToChallenge = function(challengeId) {
-        window.top.postMessage({cmd: 'setLocation', params: ['#/' + this.group + '/' + challengeId]}, '*');
-    };
-
-    SandboxChallengeCtrl.prototype.goToGroup = function(group) {
-        window.top.postMessage({cmd: 'setLocation', params: ['#/' + group]}, '*');
-    };
-
-    SandboxChallengeCtrl.prototype.getNextChallengeId = function() {
-        var curChallengeIndex = this.challengeOrder.indexOf(this.challengeId);
-
-        if (curChallengeIndex > -1 && curChallengeIndex < this.challengeOrder.length) {
-            return this.challengeOrder[curChallengeIndex + 1];
-        }
-        else {
-            return undefined;
-        }
+      },
+      transclude: true,
+      controller: SandboxChallengeCtrl,
+      controllerAs: 'ctrl',
+      template: sandboxChallengeHtml
     }
+  });
 
-}());
-var TestCase = function($sce, $q, description, expression, expectedValue, runTest) {
+  var SandboxChallengeCtrl = function ($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce, $q, challengeConfig) {
     var _this = this;
 
     this.$q = $q;
-    this.$sce = $sce;
-    this.description = $sce.trustAsHtml(description);
-    this.runTestUnsafe = runTest;
 
-    this.wrapExpectedValueInPre = false;
-    this.wrapActualValueInPre = false;
+    //Extract options
+    this.group = $scope.options.group;
+    this.challengeId = $scope.options.challengeId;
+    this.testCases = $scope.options.testCases;
+    this.description = $sce.trustAsHtml($scope.options.description);
+    this.showOutput = $scope.options.showOutput === true;
 
-    if (expression) {
-        if (expression.indexOf('<br/>') > -1 || expression.indexOf('\n') > -1) {
-            this.expression = $sce.trustAsHtml('<pre>' + expression + '</pre>');
+    this.challengeConfig = challengeConfig;
+
+    this.challenges = challengeConfig.challenges[this.group];
+    this.challengeOrder = challengeConfig.order[this.group];
+
+    //setup firebase connection
+    this.dbRef = new Firebase('https://sandbox-challenge.firebaseio.com');
+    this.leaderboard = $firebase(this.dbRef.child('leaderboard'));
+    this.auth = $firebaseSimpleLogin(this.dbRef);
+    $scope.$on("$firebaseSimpleLogin:login", this.onUserLoggedIn.bind(this));
+
+    this.loginStateDetermined = false;
+    this.auth.$getCurrentUser().then(function () {
+      _this.loginStateDetermined = true;
+    });
+
+    this.allTestsPassingPromiseMgr = $q.defer();
+    this.firebaseDataLoadedPromiseMgr = $q.defer();
+
+    this.leaderboard.then(function () {
+      _this.firebaseDataLoadedPromiseMgr.resolve();
+    });
+
+
+  };
+
+  SandboxChallengeCtrl.prototype.uploadChallengeCompleted = function () {
+
+  };
+
+  SandboxChallengeCtrl.prototype.getAllTestsPassing = function () {
+    var allPassing = true;
+    for (var i = 0; i < this.testCases.length; i++) {
+
+      allPassing = allPassing && this.testCases[i].isPassing();
+    }
+
+    if (allPassing) {
+      this.challenges[this.challengeId].completed = true;
+      this.allTestsPassingPromiseMgr.resolve();
+    }
+
+    return allPassing;
+  };
+
+  SandboxChallengeCtrl.prototype.login = function (provider) {
+    if (this.challengeId === 'firebaseSimpleLogin') {
+      alert('Nice try. Write your own login function for this challenge.');
+    } else {
+      this.auth.$login(provider);
+    }
+  };
+
+  SandboxChallengeCtrl.prototype.logout = function () {
+    this.auth.$logout();
+  };
+
+  SandboxChallengeCtrl.prototype.onUserLoggedIn = function (event, user) {
+    var _this = this;
+    var leaderboardUser = _this.leaderboard.$child(user.uid);
+
+    this.$q.all([
+        this.allTestsPassingPromiseMgr.promise,
+        this.firebaseDataLoadedPromiseMgr.promise]
+    ).then(function () {
+        //Make sure the user is still logged in as the same user they were when onUserLoggedIn got called.
+        if (_this.auth.user === user) {
+          var userChallenges = leaderboardUser.$child('challenges');
+
+          if (!userChallenges[_this.challengeId]) {
+            var now = new Date();
+
+            var completedChallenge = {};
+            completedChallenge[_this.challengeId] = now;
+            userChallenges.$update(completedChallenge);
+
+            leaderboardUser.$update({$priority: now});
+
+          }
         }
-        else {
-            this.expression = $sce.trustAsHtml('<code>' + expression + '</code>');
+      });
+
+    var profile = {
+      name: user.displayName,
+      pic: _this.getPicFromUser(user)
+    };
+    leaderboardUser.$update({profile: profile});
+
+
+    this.firebaseDataLoadedPromiseMgr.promise.then(function () {
+      for (var key in leaderboardUser.challenges) {
+        var curChallenge = _this.challengeConfig.getChallenge(key);
+        if (curChallenge) {
+          curChallenge.completed = true;
         }
+      }
+    });
+
+  };
+
+  SandboxChallengeCtrl.prototype.getPicFromUser = function (user) {
+    switch (user.provider) {
+      case 'github':
+        return user.thirdPartyUserData.avatar_url;
+      case 'google':
+        return user.thirdPartyUserData.picture;
+      case 'facebook':
+        return 'https://graph.facebook.com/' + user.id + '/picture';
+    }
+
+  };
+
+  SandboxChallengeCtrl.prototype.getScoreFromUserData = function (userData) {
+    var score = 0;
+
+    for (var challengeId in userData.challenges) {
+      if (this.challengeConfig.getChallenge(challengeId)) {
+        score++;
+      }
+    }
+
+    return score;
+  };
+
+  SandboxChallengeCtrl.prototype.getLastCompletedChallengeFromUserData = function (userData) {
+    var latestCompletedChallengeDate = null;
+    var latestCompletedChallenge = null;
+
+    for (var challengeId in userData.challenges) {
+      var challenge = this.challengeConfig.getChallenge(challengeId);
+      if (challenge) {
+        if (!latestCompletedChallengeDate || userData.challenges[challengeId] > latestCompletedChallengeDate) {
+          latestCompletedChallengeDate = userData.challenges[challengeId];
+          latestCompletedChallenge = challenge;
+        }
+      }
+    }
+
+    //This shouldn't really come up but could if someone logs in before they complete a challenge.
+    if (!latestCompletedChallengeDate) {
+      return null;
+    }
+
+    var latestChallengeWithDate = angular.copy(latestCompletedChallenge);
+    latestChallengeWithDate.date = latestCompletedChallengeDate;
+
+    return latestChallengeWithDate;
+  };
 
 
+  //taken from http://stackoverflow.com/a/3177838/373655
+  SandboxChallengeCtrl.prototype.timeSince = function (date) {
+    if (typeof date !== 'object') {
+      date = new Date(date);
+    }
+
+    var seconds = Math.floor((new Date() - date) / 1000);
+    var intervalType;
+
+    var interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) {
+      intervalType = 'year';
+    } else {
+      interval = Math.floor(seconds / 2592000);
+      if (interval >= 1) {
+        intervalType = 'month';
+      } else {
+        interval = Math.floor(seconds / 86400);
+        if (interval >= 1) {
+          intervalType = 'day';
+        } else {
+          interval = Math.floor(seconds / 3600);
+          if (interval >= 1) {
+            intervalType = "hour";
+          } else {
+            interval = Math.floor(seconds / 60);
+            if (interval >= 1) {
+              intervalType = "minute";
+            } else {
+              intervalType = "second";
+            }
+          }
+        }
+      }
+    }
+
+    if (interval > 1) {
+      intervalType += 's';
+    }
+
+    return interval + ' ' + intervalType;
+  };
+
+  SandboxChallengeCtrl.prototype.goToChallenge = function (challengeId) {
+    window.top.postMessage({cmd: 'setLocation', params: ['#/' + this.group + '/' + challengeId]}, '*');
+  };
+
+  SandboxChallengeCtrl.prototype.goToGroup = function (group) {
+    window.top.postMessage({cmd: 'setLocation', params: ['#/' + group]}, '*');
+  };
+
+  SandboxChallengeCtrl.prototype.getNextChallengeId = function () {
+    var curChallengeIndex = this.challengeOrder.indexOf(this.challengeId);
+
+    if (curChallengeIndex > -1 && curChallengeIndex < this.challengeOrder.length) {
+      return this.challengeOrder[curChallengeIndex + 1];
     }
     else {
-        this.expression = $sce.trustAsHtml('n/a');
+      return undefined;
+    }
+  }
+
+}());
+var TestCase = function ($sce, $q, description, expression, expectedValue, runTest) {
+  var _this = this;
+
+  this.$q = $q;
+  this.$sce = $sce;
+  this.description = $sce.trustAsHtml(description);
+  this.runTestUnsafe = runTest;
+
+  this.wrapExpectedValueInPre = false;
+  this.wrapActualValueInPre = false;
+
+  if (expression) {
+    if (expression.indexOf('<br/>') > -1 || expression.indexOf('\n') > -1) {
+      this.expression = $sce.trustAsHtml('<pre>' + expression + '</pre>');
+    }
+    else {
+      this.expression = $sce.trustAsHtml('<code>' + expression + '</code>');
     }
 
-    this.testHasRun = false;
-    this.lastActualValue = '<Waiting>';
-    this.expectedValue = '';
 
-    var setExpectedValue = function(value) {
-        _this.expectedValue = value;
-    };
+  }
+  else {
+    this.expression = $sce.trustAsHtml('n/a');
+  }
 
-    $q.when(expectedValue).then(setExpectedValue, setExpectedValue, setExpectedValue);
+  this.testHasRun = false;
+  this.lastActualValue = '<Waiting>';
+  this.expectedValue = '';
+
+  var setExpectedValue = function (value) {
+    _this.expectedValue = value;
+  };
+
+  $q.when(expectedValue).then(setExpectedValue, setExpectedValue, setExpectedValue);
 };
 
-TestCase.prototype.runTest = function() {
-    var _this = this;
-    this.testHasRun = true;
+TestCase.prototype.runTest = function () {
+  var _this = this;
+  this.testHasRun = true;
 
-    var setLastValue = function(value) {
-        _this.lastActualValue = value;
-    };
+  var setLastValue = function (value) {
+    _this.lastActualValue = value;
+  };
 
-    try {
-        this.$q.when(this.runTestUnsafe()).then(setLastValue, setLastValue, setLastValue);
-    } catch (err) {
-        setLastValue(err);
-    }
+  try {
+    this.$q.when(this.runTestUnsafe()).then(setLastValue, setLastValue, setLastValue);
+  } catch (err) {
+    setLastValue(err);
+  }
 
-    return this.lastActualValue;
+  return this.lastActualValue;
 };
 
-TestCase.prototype.isPassing = function() {
-    var actualValue = this.getActualValue();
+TestCase.prototype.isPassing = function () {
+  var actualValue = this.getActualValue();
 
-    if (this.expectedValue instanceof Array) {
-        return this._compareArrays(this.expectedValue, actualValue);
+  if (this.expectedValue instanceof Array) {
+    return this._compareArrays(this.expectedValue, actualValue);
 
-    } else {
-        return this.expectedValue === actualValue;
-    }
+  } else {
+    return this.expectedValue === actualValue;
+  }
 };
 
-TestCase.prototype.getActualValue = function() {
-    if (this.testHasRun === false) {
-        this.runTest();
-    }
+TestCase.prototype.getActualValue = function () {
+  if (this.testHasRun === false) {
+    this.runTest();
+  }
 
-    return this.lastActualValue;
+  return this.lastActualValue;
 };
 
-TestCase.prototype.getDisplayableValue = function(value, setWrapInPre) {
-    var displayString;
-    setWrapInPre(false);
+TestCase.prototype.getDisplayableValue = function (value, setWrapInPre) {
+  var displayString;
+  setWrapInPre(false);
 
-    if (value === undefined) {
-        displayString = 'undefined';
+  if (value === undefined) {
+    displayString = 'undefined';
 
-    } else if (value instanceof Error) {
-        displayString = value.toString();
+  } else if (value instanceof Error) {
+    displayString = value.toString();
 
-    } else if (value instanceof Array) {
-        displayString = JSON.stringify(value);
+  } else if (value instanceof Array) {
+    displayString = JSON.stringify(value);
 
-    } else if (typeof value === 'object') {
-        setWrapInPre(true);
-        displayString = this.getPrettyObjectSummary(value);
+  } else if (typeof value === 'object') {
+    setWrapInPre(true);
+    displayString = this.getPrettyObjectSummary(value);
 
-    } else {
-        displayString = String(value);
-    }
+  } else {
+    displayString = String(value);
+  }
 
-    return displayString;
+  return displayString;
 };
 
-TestCase.prototype.getDisplayableExpectedValue = function() {
-    var _this = this;
-    return this.getDisplayableValue(this.expectedValue, function(wrap) {_this.wrapExpectedValueInPre = wrap});
+TestCase.prototype.getDisplayableExpectedValue = function () {
+  var _this = this;
+  return this.getDisplayableValue(this.expectedValue, function (wrap) {
+    _this.wrapExpectedValueInPre = wrap
+  });
 };
 
-TestCase.prototype.getDisplayableActualValue = function() {
-    var _this = this;
-    return this.getDisplayableValue(this.getActualValue(), function(wrap) {_this.wrapActualValueInPre = wrap});
+TestCase.prototype.getDisplayableActualValue = function () {
+  var _this = this;
+  return this.getDisplayableValue(this.getActualValue(), function (wrap) {
+    _this.wrapActualValueInPre = wrap
+  });
 };
 
 //taken from http://stackoverflow.com/a/14853974/373655
-TestCase.prototype._compareArrays = function(array1, array2) {
-    // if an array is a falsy value, return
-    if (!array1 || !array2) {
-        return false;
-    }
+TestCase.prototype._compareArrays = function (array1, array2) {
+  // if an array is a falsy value, return
+  if (!array1 || !array2) {
+    return false;
+  }
 
-    // compare lengths - can save a lot of time
-    if (array1.length != array2.length)
-        return false;
+  // compare lengths - can save a lot of time
+  if (array1.length != array2.length)
+    return false;
 
-    for (var i = 0; i < array1.length; i++) {
-        // Check if we have nested arrays
-        if (array1[i] instanceof Array && array2[i] instanceof Array) {
-            // recurse into the nested arrays
-            if (!this._compareArrays(array1[i], array2[i])) {
-                return false;
-            }
-        }
-        else if (array1[i] != array2[i]) {
-            // Warning - two different object instances will never be equal: {x:20} != {x:20}
-            return false;
-        }
+  for (var i = 0; i < array1.length; i++) {
+    // Check if we have nested arrays
+    if (array1[i] instanceof Array && array2[i] instanceof Array) {
+      // recurse into the nested arrays
+      if (!this._compareArrays(array1[i], array2[i])) {
+        return false;
+      }
     }
-    return true;
+    else if (array1[i] != array2[i]) {
+      // Warning - two different object instances will never be equal: {x:20} != {x:20}
+      return false;
+    }
+  }
+  return true;
 };
 
-TestCase.prototype.getPrettyObjectSummary = function(obj) {
-    var maxProps = 4;
-    var maxLineLength = 20;
+TestCase.prototype.getPrettyObjectSummary = function (obj) {
+  var maxProps = 4;
+  var maxLineLength = 20;
 
-    var numProps = 0;
-    var output = '{\n';
-    for (var key in obj) {
-        if (numProps > 0) {
-            output += ',\n';
-        }
-
-        if (numProps >= maxProps) {
-            output += '  ...\n';
-            break;
-        }
-
-        if (obj.hasOwnProperty(key)) {
-            numProps += 1;
-            output += '  ';
-
-            var newLine;
-            if (typeof obj[key] === 'function') {
-                newLine = key + ': ' + obj[key].toString();
-            } else {
-                newLine = key + ': ' + JSON.stringify(obj[key]);
-            }
-
-            if (newLine.length > maxLineLength) {
-                newLine = newLine.substring(0, maxLineLength - 3) + '...';
-            }
-
-            output += newLine;
-        }
+  var numProps = 0;
+  var output = '{\n';
+  for (var key in obj) {
+    if (numProps > 0) {
+      output += ',\n';
     }
 
-    return output + '}';
+    if (numProps >= maxProps) {
+      output += '  ...\n';
+      break;
+    }
+
+    if (obj.hasOwnProperty(key)) {
+      numProps += 1;
+      output += '  ';
+
+      var newLine;
+      if (typeof obj[key] === 'function') {
+        newLine = key + ': ' + obj[key].toString();
+      } else {
+        newLine = key + ': ' + JSON.stringify(obj[key]);
+      }
+
+      if (newLine.length > maxLineLength) {
+        newLine = newLine.substring(0, maxLineLength - 3) + '...';
+      }
+
+      output += newLine;
+    }
+  }
+
+  return output + '}';
 };
-(function() {
-    var configApp = angular.module('theSandboxChallenge.config');
+(function () {
+  var configApp = angular.module('theSandboxChallenge.config');
 
-    configApp.factory('challengeConfig', function () {
-        return {
-            challenges: {
-                ES6: {
-                    blockScopeLet: {
-                        jsBin: 'likum',
-                        name: 'Block Scopes'
-                    },
-                    arrowFunctions: {
-                        jsBin: 'mupone',
-                        name: 'Arrow Functions'
-                    },
-                    forOfLoops: {
-                        jsBin: 'katum',
-                        name: 'For...Of Loops'
-                    },
-                    destructuringArrays: {
-                        jsBin: 'fidig',
-                        name: 'Destructuring: Arrays'
-                    },
-                    destructuringSwap: {
-                        jsBin: 'sapuyo',
-                        name: 'Destructuring: Swap'
-                    },
-                    destructuringObjects: {
-                        jsBin: 'gagebowu',
-                        name: 'Destructuring: Objects'
-                    },
-                    optionalParameters: {
-                        jsBin: 'befey',
-                        name: 'Optional Parameters'
-                    }
-                },
-                AngularFire: {
-                    firebaseSimpleLogin: {
-                        jsBin: 'qetin',
-                        name: 'Firebase Simple Login'
-                    },
-                    userProfile: {
-                        jsBin: 'mojan',
-                        name: 'User Profile',
-                        view: 'html,js,output'
-                    },
-                    firebaseService: {
-                        jsBin: 'kefuh',
-                        name: 'The $firebase Service'
-                    }
-                }
-            },
-            order: {
-                ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
-                AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService']
-            },
-
-            getChallenge: function(id) {
-                for (var group in this.challenges) {
-                    for (var challengeId in this.challenges[group]) {
-                        if (id === challengeId) {
-                            return this.challenges[group][challengeId];
-                        }
-                    }
-                }
-
-                return undefined;
-            }
-
+  configApp.factory('challengeConfig', function () {
+    return {
+      challenges: {
+        ES6: {
+          blockScopeLet: {
+            jsBin: 'likum',
+            name: 'Block Scopes'
+          },
+          arrowFunctions: {
+            jsBin: 'mupone',
+            name: 'Arrow Functions'
+          },
+          forOfLoops: {
+            jsBin: 'katum',
+            name: 'For...Of Loops'
+          },
+          destructuringArrays: {
+            jsBin: 'fidig',
+            name: 'Destructuring: Arrays'
+          },
+          destructuringSwap: {
+            jsBin: 'sapuyo',
+            name: 'Destructuring: Swap'
+          },
+          destructuringObjects: {
+            jsBin: 'gagebowu',
+            name: 'Destructuring: Objects'
+          },
+          optionalParameters: {
+            jsBin: 'befey',
+            name: 'Optional Parameters'
+          }
+        },
+        AngularFire: {
+          firebaseSimpleLogin: {
+            jsBin: 'qetin',
+            name: 'Firebase Simple Login'
+          },
+          userProfile: {
+            jsBin: 'mojan',
+            name: 'User Profile',
+            views: 'html,js,output'
+          },
+          firebaseService: {
+            jsBin: 'kefuh',
+            name: 'The $firebase Service'
+          }
         }
-    });
+      },
+      order: {
+        ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
+        AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService']
+      },
+
+      getChallenge: function (id) {
+        for (var group in this.challenges) {
+          for (var challengeId in this.challenges[group]) {
+            if (id === challengeId) {
+              return this.challenges[group][challengeId];
+            }
+          }
+        }
+
+        return undefined;
+      }
+
+    }
+  });
 }());
-(function() {
+(function () {
 
-    var app = angular.module('theSandboxChallenge');
+  var app = angular.module('theSandboxChallenge');
 
-    app.filter('reverse', function() {
-        return function(items) {
-            return items.slice().reverse();
-        };
-    });
+  app.filter('reverse', function () {
+    return function (items) {
+      return items.slice().reverse();
+    };
+  });
 
 }());

@@ -1,11 +1,11 @@
-(function() {
+(function () {
 
-    var app = angular.module('theSandboxChallenge');
+  var app = angular.module('theSandboxChallenge');
 
-    app.filter('reverse', function() {
-        return function(items) {
-            return items.slice().reverse();
-        };
-    });
+  app.filter('reverse', function () {
+    return function (items) {
+      return items.slice().reverse();
+    };
+  });
 
 }());

@@ -1,9 +1,9 @@
-(function() {
+(function () {
 
-    var app = angular.module('theSandboxChallenge');
+  var app = angular.module('theSandboxChallenge');
 
-    //language=HTML
-    var sandboxChallengeHtml = '\
+  //language=HTML
+  var sandboxChallengeHtml = '\
         <div style="margin-top:30px">\
             <div class="navbar navbar-default">\
                 <div class="container-fluid">\
@@ -162,241 +162,241 @@
         </div>\
         ';
 
-    app.directive('sandboxChallenge', function() {
-        return {
-            scope: {
-                options: '='
+  app.directive('sandboxChallenge', function () {
+    return {
+      scope: {
+        options: '='
 
-            },
-            transclude: true,
-            controller: SandboxChallengeCtrl,
-            controllerAs: 'ctrl',
-            template: sandboxChallengeHtml
-        }
+      },
+      transclude: true,
+      controller: SandboxChallengeCtrl,
+      controllerAs: 'ctrl',
+      template: sandboxChallengeHtml
+    }
+  });
+
+  var SandboxChallengeCtrl = function ($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce, $q, challengeConfig) {
+    var _this = this;
+
+    this.$q = $q;
+
+    //Extract options
+    this.group = $scope.options.group;
+    this.challengeId = $scope.options.challengeId;
+    this.testCases = $scope.options.testCases;
+    this.description = $sce.trustAsHtml($scope.options.description);
+    this.showOutput = $scope.options.showOutput === true;
+
+    this.challengeConfig = challengeConfig;
+
+    this.challenges = challengeConfig.challenges[this.group];
+    this.challengeOrder = challengeConfig.order[this.group];
+
+    //setup firebase connection
+    this.dbRef = new Firebase('https://sandbox-challenge.firebaseio.com');
+    this.leaderboard = $firebase(this.dbRef.child('leaderboard'));
+    this.auth = $firebaseSimpleLogin(this.dbRef);
+    $scope.$on("$firebaseSimpleLogin:login", this.onUserLoggedIn.bind(this));
+
+    this.loginStateDetermined = false;
+    this.auth.$getCurrentUser().then(function () {
+      _this.loginStateDetermined = true;
     });
 
-    var SandboxChallengeCtrl = function($scope, $rootScope, $firebase, $firebaseSimpleLogin, $sce, $q, challengeConfig) {
-        var _this = this;
+    this.allTestsPassingPromiseMgr = $q.defer();
+    this.firebaseDataLoadedPromiseMgr = $q.defer();
 
-        this.$q = $q;
-
-        //Extract options
-        this.group = $scope.options.group;
-        this.challengeId = $scope.options.challengeId;
-        this.testCases = $scope.options.testCases;
-        this.description = $sce.trustAsHtml($scope.options.description);
-        this.showOutput = $scope.options.showOutput === true;
-
-        this.challengeConfig = challengeConfig;
-
-        this.challenges = challengeConfig.challenges[this.group];
-        this.challengeOrder = challengeConfig.order[this.group];
-
-        //setup firebase connection
-        this.dbRef = new Firebase('https://sandbox-challenge.firebaseio.com');
-        this.leaderboard = $firebase(this.dbRef.child('leaderboard'));
-        this.auth = $firebaseSimpleLogin(this.dbRef);
-        $scope.$on("$firebaseSimpleLogin:login", this.onUserLoggedIn.bind(this));
-
-        this.loginStateDetermined = false;
-        this.auth.$getCurrentUser().then(function() {
-            _this.loginStateDetermined = true;
-        });
-
-        this.allTestsPassingPromiseMgr = $q.defer();
-        this.firebaseDataLoadedPromiseMgr = $q.defer();
-
-        this.leaderboard.then(function() {
-            _this.firebaseDataLoadedPromiseMgr.resolve();
-        });
+    this.leaderboard.then(function () {
+      _this.firebaseDataLoadedPromiseMgr.resolve();
+    });
 
 
-    };
+  };
 
-    SandboxChallengeCtrl.prototype.uploadChallengeCompleted = function() {
+  SandboxChallengeCtrl.prototype.uploadChallengeCompleted = function () {
 
-    };
+  };
 
-    SandboxChallengeCtrl.prototype.getAllTestsPassing = function() {
-        var allPassing = true;
-        for (var i = 0; i < this.testCases.length; i++) {
+  SandboxChallengeCtrl.prototype.getAllTestsPassing = function () {
+    var allPassing = true;
+    for (var i = 0; i < this.testCases.length; i++) {
 
-            allPassing = allPassing && this.testCases[i].isPassing();
-        }
-
-        if (allPassing) {
-            this.challenges[this.challengeId].completed = true;
-            this.allTestsPassingPromiseMgr.resolve();
-        }
-
-        return allPassing;
-    };
-
-    SandboxChallengeCtrl.prototype.login = function(provider) {
-        if (this.challengeId === 'firebaseSimpleLogin') {
-            alert('Nice try. Write your own login function for this challenge.');
-        } else {
-            this.auth.$login(provider);
-        }
-    };
-
-    SandboxChallengeCtrl.prototype.logout = function() {
-        this.auth.$logout();
-    };
-
-    SandboxChallengeCtrl.prototype.onUserLoggedIn = function(event, user) {
-        var _this = this;
-        var leaderboardUser = _this.leaderboard.$child(user.uid);
-
-        this.$q.all([
-                this.allTestsPassingPromiseMgr.promise,
-                this.firebaseDataLoadedPromiseMgr.promise]
-        ).then(function() {
-                //Make sure the user is still logged in as the same user they were when onUserLoggedIn got called.
-                if (_this.auth.user === user) {
-                    var userChallenges = leaderboardUser.$child('challenges');
-
-                    if (!userChallenges[_this.challengeId]) {
-                        var now = new Date();
-
-                        var completedChallenge = {};
-                        completedChallenge[_this.challengeId] = now;
-                        userChallenges.$update(completedChallenge);
-
-                        leaderboardUser.$update({$priority: now});
-
-                    }
-                }
-            });
-
-        var profile = {
-            name: user.displayName,
-            pic: _this.getPicFromUser(user)
-        };
-        leaderboardUser.$update({profile: profile});
-
-
-        this.firebaseDataLoadedPromiseMgr.promise.then(function() {
-            for (var key in leaderboardUser.challenges) {
-                var curChallenge = _this.challengeConfig.getChallenge(key);
-                if (curChallenge) {
-                    curChallenge.completed = true;
-                }
-            }
-        });
-
-    };
-
-    SandboxChallengeCtrl.prototype.getPicFromUser = function(user) {
-        switch (user.provider) {
-            case 'github':
-                return user.thirdPartyUserData.avatar_url;
-            case 'google':
-                return user.thirdPartyUserData.picture;
-            case 'facebook':
-                return 'https://graph.facebook.com/' + user.id + '/picture';
-        }
-
-    };
-
-    SandboxChallengeCtrl.prototype.getScoreFromUserData = function(userData) {
-        var score = 0;
-
-        for (var challengeId in userData.challenges) {
-            if (this.challengeConfig.getChallenge(challengeId)) {
-                score++;
-            }
-        }
-
-        return score;
-    };
-
-    SandboxChallengeCtrl.prototype.getLastCompletedChallengeFromUserData = function(userData) {
-        var latestCompletedChallengeDate = null;
-        var latestCompletedChallenge = null;
-
-        for (var challengeId in userData.challenges) {
-            var challenge = this.challengeConfig.getChallenge(challengeId);
-            if (challenge) {
-                if (!latestCompletedChallengeDate || userData.challenges[challengeId] > latestCompletedChallengeDate) {
-                    latestCompletedChallengeDate = userData.challenges[challengeId];
-                    latestCompletedChallenge = challenge;
-                }
-            }
-        }
-
-        //This shouldn't really come up but could if someone logs in before they complete a challenge.
-        if (!latestCompletedChallengeDate) {
-            return null;
-        }
-
-        var latestChallengeWithDate = angular.copy(latestCompletedChallenge);
-        latestChallengeWithDate.date = latestCompletedChallengeDate;
-
-        return latestChallengeWithDate;
-    };
-
-
-    //taken from http://stackoverflow.com/a/3177838/373655
-    SandboxChallengeCtrl.prototype.timeSince = function(date) {
-        if (typeof date !== 'object') {
-            date = new Date(date);
-        }
-
-        var seconds = Math.floor((new Date() - date) / 1000);
-        var intervalType;
-
-        var interval = Math.floor(seconds / 31536000);
-        if (interval >= 1) {
-            intervalType = 'year';
-        } else {
-            interval = Math.floor(seconds / 2592000);
-            if (interval >= 1) {
-                intervalType = 'month';
-            } else {
-                interval = Math.floor(seconds / 86400);
-                if (interval >= 1) {
-                    intervalType = 'day';
-                } else {
-                    interval = Math.floor(seconds / 3600);
-                    if (interval >= 1) {
-                        intervalType = "hour";
-                    } else {
-                        interval = Math.floor(seconds / 60);
-                        if (interval >= 1) {
-                            intervalType = "minute";
-                        } else {
-                            intervalType = "second";
-                        }
-                    }
-                }
-            }
-        }
-
-        if (interval > 1) {
-            intervalType += 's';
-        }
-
-        return interval + ' ' + intervalType;
-    };
-
-    SandboxChallengeCtrl.prototype.goToChallenge = function(challengeId) {
-        window.top.postMessage({cmd: 'setLocation', params: ['#/' + this.group + '/' + challengeId]}, '*');
-    };
-
-    SandboxChallengeCtrl.prototype.goToGroup = function(group) {
-        window.top.postMessage({cmd: 'setLocation', params: ['#/' + group]}, '*');
-    };
-
-    SandboxChallengeCtrl.prototype.getNextChallengeId = function() {
-        var curChallengeIndex = this.challengeOrder.indexOf(this.challengeId);
-
-        if (curChallengeIndex > -1 && curChallengeIndex < this.challengeOrder.length) {
-            return this.challengeOrder[curChallengeIndex + 1];
-        }
-        else {
-            return undefined;
-        }
+      allPassing = allPassing && this.testCases[i].isPassing();
     }
+
+    if (allPassing) {
+      this.challenges[this.challengeId].completed = true;
+      this.allTestsPassingPromiseMgr.resolve();
+    }
+
+    return allPassing;
+  };
+
+  SandboxChallengeCtrl.prototype.login = function (provider) {
+    if (this.challengeId === 'firebaseSimpleLogin') {
+      alert('Nice try. Write your own login function for this challenge.');
+    } else {
+      this.auth.$login(provider);
+    }
+  };
+
+  SandboxChallengeCtrl.prototype.logout = function () {
+    this.auth.$logout();
+  };
+
+  SandboxChallengeCtrl.prototype.onUserLoggedIn = function (event, user) {
+    var _this = this;
+    var leaderboardUser = _this.leaderboard.$child(user.uid);
+
+    this.$q.all([
+        this.allTestsPassingPromiseMgr.promise,
+        this.firebaseDataLoadedPromiseMgr.promise]
+    ).then(function () {
+        //Make sure the user is still logged in as the same user they were when onUserLoggedIn got called.
+        if (_this.auth.user === user) {
+          var userChallenges = leaderboardUser.$child('challenges');
+
+          if (!userChallenges[_this.challengeId]) {
+            var now = new Date();
+
+            var completedChallenge = {};
+            completedChallenge[_this.challengeId] = now;
+            userChallenges.$update(completedChallenge);
+
+            leaderboardUser.$update({$priority: now});
+
+          }
+        }
+      });
+
+    var profile = {
+      name: user.displayName,
+      pic: _this.getPicFromUser(user)
+    };
+    leaderboardUser.$update({profile: profile});
+
+
+    this.firebaseDataLoadedPromiseMgr.promise.then(function () {
+      for (var key in leaderboardUser.challenges) {
+        var curChallenge = _this.challengeConfig.getChallenge(key);
+        if (curChallenge) {
+          curChallenge.completed = true;
+        }
+      }
+    });
+
+  };
+
+  SandboxChallengeCtrl.prototype.getPicFromUser = function (user) {
+    switch (user.provider) {
+      case 'github':
+        return user.thirdPartyUserData.avatar_url;
+      case 'google':
+        return user.thirdPartyUserData.picture;
+      case 'facebook':
+        return 'https://graph.facebook.com/' + user.id + '/picture';
+    }
+
+  };
+
+  SandboxChallengeCtrl.prototype.getScoreFromUserData = function (userData) {
+    var score = 0;
+
+    for (var challengeId in userData.challenges) {
+      if (this.challengeConfig.getChallenge(challengeId)) {
+        score++;
+      }
+    }
+
+    return score;
+  };
+
+  SandboxChallengeCtrl.prototype.getLastCompletedChallengeFromUserData = function (userData) {
+    var latestCompletedChallengeDate = null;
+    var latestCompletedChallenge = null;
+
+    for (var challengeId in userData.challenges) {
+      var challenge = this.challengeConfig.getChallenge(challengeId);
+      if (challenge) {
+        if (!latestCompletedChallengeDate || userData.challenges[challengeId] > latestCompletedChallengeDate) {
+          latestCompletedChallengeDate = userData.challenges[challengeId];
+          latestCompletedChallenge = challenge;
+        }
+      }
+    }
+
+    //This shouldn't really come up but could if someone logs in before they complete a challenge.
+    if (!latestCompletedChallengeDate) {
+      return null;
+    }
+
+    var latestChallengeWithDate = angular.copy(latestCompletedChallenge);
+    latestChallengeWithDate.date = latestCompletedChallengeDate;
+
+    return latestChallengeWithDate;
+  };
+
+
+  //taken from http://stackoverflow.com/a/3177838/373655
+  SandboxChallengeCtrl.prototype.timeSince = function (date) {
+    if (typeof date !== 'object') {
+      date = new Date(date);
+    }
+
+    var seconds = Math.floor((new Date() - date) / 1000);
+    var intervalType;
+
+    var interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) {
+      intervalType = 'year';
+    } else {
+      interval = Math.floor(seconds / 2592000);
+      if (interval >= 1) {
+        intervalType = 'month';
+      } else {
+        interval = Math.floor(seconds / 86400);
+        if (interval >= 1) {
+          intervalType = 'day';
+        } else {
+          interval = Math.floor(seconds / 3600);
+          if (interval >= 1) {
+            intervalType = "hour";
+          } else {
+            interval = Math.floor(seconds / 60);
+            if (interval >= 1) {
+              intervalType = "minute";
+            } else {
+              intervalType = "second";
+            }
+          }
+        }
+      }
+    }
+
+    if (interval > 1) {
+      intervalType += 's';
+    }
+
+    return interval + ' ' + intervalType;
+  };
+
+  SandboxChallengeCtrl.prototype.goToChallenge = function (challengeId) {
+    window.top.postMessage({cmd: 'setLocation', params: ['#/' + this.group + '/' + challengeId]}, '*');
+  };
+
+  SandboxChallengeCtrl.prototype.goToGroup = function (group) {
+    window.top.postMessage({cmd: 'setLocation', params: ['#/' + group]}, '*');
+  };
+
+  SandboxChallengeCtrl.prototype.getNextChallengeId = function () {
+    var curChallengeIndex = this.challengeOrder.indexOf(this.challengeId);
+
+    if (curChallengeIndex > -1 && curChallengeIndex < this.challengeOrder.length) {
+      return this.challengeOrder[curChallengeIndex + 1];
+    }
+    else {
+      return undefined;
+    }
+  }
 
 }());

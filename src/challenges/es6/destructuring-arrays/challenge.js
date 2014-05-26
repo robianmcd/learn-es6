@@ -1,14 +1,14 @@
-let doubleANumber = function(num) {
-    let valid, result;
+let doubleANumber = function (num) {
+  let valid, result;
 
-    if (typeof num === 'number') {
-        result = num * 2;
-        valid = true;
-    } else {
-        valid = false;
-    }
+  if (typeof num === 'number') {
+    result = num * 2;
+    valid = true;
+  } else {
+    valid = false;
+  }
 
-    return [valid, result];
+  return [valid, result];
 };
 
 /*
@@ -23,7 +23,6 @@ let doubleANumber = function(num) {
 doubleANumber(21);
 
 
-
 if (window.numIsValid) {
-    console.log(window.num);
+  console.log(window.num);
 }

@@ -1,5 +1,5 @@
-(function() {
-    angular.module('theSandboxChallenge.config', []);
+(function () {
+  angular.module('theSandboxChallenge.config', []);
 }());
 
 
