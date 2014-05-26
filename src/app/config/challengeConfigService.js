@@ -42,7 +42,7 @@
                     userProfile: {
                         jsBin: 'mojan',
                         name: 'User Profile',
-                        view: 'html,js,output'
+                        views: 'html,js,output'
                     },
                     firebaseService: {
                         jsBin: 'kefuh',
