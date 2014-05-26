@@ -196,7 +196,7 @@
         this.dbRef = new Firebase('https://sandbox-challenge.firebaseio.com');
         this.leaderboard = $firebase(this.dbRef.child('leaderboard'));
         this.auth = $firebaseSimpleLogin(this.dbRef);
-        $rootScope.$on("$firebaseSimpleLogin:login", this.onUserLoggedIn.bind(this));
+        $scope.$on("$firebaseSimpleLogin:login", this.onUserLoggedIn.bind(this));
 
         this.loginStateDetermined = false;
         this.auth.$getCurrentUser().then(function() {
@@ -249,25 +249,25 @@
         var leaderboardUser = _this.leaderboard.$child(user.uid);
 
         this.$q.all([
-            this.allTestsPassingPromiseMgr.promise,
-            this.firebaseDataLoadedPromiseMgr.promise]
+                this.allTestsPassingPromiseMgr.promise,
+                this.firebaseDataLoadedPromiseMgr.promise]
         ).then(function() {
-            //Make sure the user is still logged in as the same user they were when onUserLoggedIn got called.
-            if (_this.auth.user === user) {
-                var userChallenges = leaderboardUser.$child('challenges');
+                //Make sure the user is still logged in as the same user they were when onUserLoggedIn got called.
+                if (_this.auth.user === user) {
+                    var userChallenges = leaderboardUser.$child('challenges');
 
-                if (!userChallenges[_this.challengeId]) {
-                    var now = new Date();
+                    if (!userChallenges[_this.challengeId]) {
+                        var now = new Date();
 
-                    var completedChallenge = {};
-                    completedChallenge[_this.challengeId] = now;
-                    userChallenges.$update(completedChallenge);
+                        var completedChallenge = {};
+                        completedChallenge[_this.challengeId] = now;
+                        userChallenges.$update(completedChallenge);
 
-                    leaderboardUser.$update({$priority: now});
+                        leaderboardUser.$update({$priority: now});
 
+                    }
                 }
-            }
-        });
+            });
 
         var profile = {
             name: user.displayName,

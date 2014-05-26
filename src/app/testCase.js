@@ -80,6 +80,9 @@ TestCase.prototype.getDisplayableValue = function(value, setWrapInPre) {
     } else if (value instanceof Error) {
         displayString = value.toString();
 
+    } else if (value instanceof Array) {
+        displayString = JSON.stringify(value);
+
     } else if (typeof value === 'object') {
         setWrapInPre(true);
         displayString = this.getPrettyObjectSummary(value);

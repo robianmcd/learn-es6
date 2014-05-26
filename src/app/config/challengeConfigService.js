@@ -43,12 +43,16 @@
                         jsBin: '',
                         name: 'User Profile',
                         view: 'html,js,output'
+                    },
+                    firebaseService: {
+                        jsBin: '',
+                        name: 'The $firebase Service'
                     }
                 }
             },
             order: {
                 ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
-                AngularFire: ['firebaseSimpleLogin', 'userProfile']
+                AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService']
             },
 
             getChallenge: function(id) {

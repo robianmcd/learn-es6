@@ -26526,6 +26526,21 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
 (function() {
     var app = angular.module('theSandboxChallenge');
 
+    app.factory('htmlUtils', function() {
+        return {
+            buildNewTabLink: function(href, text) {
+                if (!text) {
+                    text = href;
+                }
+
+                return '<a href="' + href + '" target="_blank">'+ text + '</a>';
+            }
+        };
+    });
+})();
+(function() {
+    var app = angular.module('theSandboxChallenge');
+
     //language=HTML
     var loginButtonsHtml = '\
         <span style="display:inline-block;">\
@@ -26539,6 +26554,26 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
         return {
             template: loginButtonsHtml
         }
+    });
+})();
+(function() {
+    var app = angular.module('theSandboxChallenge');
+
+    app.factory('myFirebaseUtils', function() {
+        return {
+            currentChallengeId: 'theSandboxChallenge',
+            setCurrentChallenge: function(challengeId) {
+                this.currentChallengeId = challengeId;
+            },
+            getBaseUrl: function() {
+                if (!localStorage.firebaseKey) {
+                    //Generates 5 character random string [a-z0-9]
+                    localStorage.firebaseKey = Math.random().toString(36).substring(2, 7);
+                }
+
+                return 'https://' + this.currentChallengeId + '-' + localStorage.firebaseKey + '.firebaseio-demo.com';
+            }
+        };
     });
 })();
 (function() {
@@ -26739,7 +26774,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
         this.dbRef = new Firebase('https://sandbox-challenge.firebaseio.com');
         this.leaderboard = $firebase(this.dbRef.child('leaderboard'));
         this.auth = $firebaseSimpleLogin(this.dbRef);
-        $rootScope.$on("$firebaseSimpleLogin:login", this.onUserLoggedIn.bind(this));
+        $scope.$on("$firebaseSimpleLogin:login", this.onUserLoggedIn.bind(this));
 
         this.loginStateDetermined = false;
         this.auth.$getCurrentUser().then(function() {
@@ -26792,25 +26827,25 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
         var leaderboardUser = _this.leaderboard.$child(user.uid);
 
         this.$q.all([
-            this.allTestsPassingPromiseMgr.promise,
-            this.firebaseDataLoadedPromiseMgr.promise]
+                this.allTestsPassingPromiseMgr.promise,
+                this.firebaseDataLoadedPromiseMgr.promise]
         ).then(function() {
-            //Make sure the user is still logged in as the same user they were when onUserLoggedIn got called.
-            if (_this.auth.user === user) {
-                var userChallenges = leaderboardUser.$child('challenges');
+                //Make sure the user is still logged in as the same user they were when onUserLoggedIn got called.
+                if (_this.auth.user === user) {
+                    var userChallenges = leaderboardUser.$child('challenges');
 
-                if (!userChallenges[_this.challengeId]) {
-                    var now = new Date();
+                    if (!userChallenges[_this.challengeId]) {
+                        var now = new Date();
 
-                    var completedChallenge = {};
-                    completedChallenge[_this.challengeId] = now;
-                    userChallenges.$update(completedChallenge);
+                        var completedChallenge = {};
+                        completedChallenge[_this.challengeId] = now;
+                        userChallenges.$update(completedChallenge);
 
-                    leaderboardUser.$update({$priority: now});
+                        leaderboardUser.$update({$priority: now});
 
+                    }
                 }
-            }
-        });
+            });
 
         var profile = {
             name: user.displayName,
@@ -27025,6 +27060,9 @@ TestCase.prototype.getDisplayableValue = function(value, setWrapInPre) {
     } else if (value instanceof Error) {
         displayString = value.toString();
 
+    } else if (value instanceof Array) {
+        displayString = JSON.stringify(value);
+
     } else if (typeof value === 'object') {
         setWrapInPre(true);
         displayString = this.getPrettyObjectSummary(value);
@@ -27155,12 +27193,16 @@ TestCase.prototype.getPrettyObjectSummary = function(obj) {
                         jsBin: '',
                         name: 'User Profile',
                         view: 'html,js,output'
+                    },
+                    firebaseService: {
+                        jsBin: '',
+                        name: 'The $firebase Service'
                     }
                 }
             },
             order: {
                 ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
-                AngularFire: ['firebaseSimpleLogin', 'userProfile']
+                AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService']
             },
 
             getChallenge: function(id) {

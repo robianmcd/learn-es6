@@ -4,7 +4,7 @@ var SetupCtrl = function($injector, $q, $rootScope, $firebaseSimpleLogin, $inter
     this.options = {};
     this.options.group = 'AngularFire';
     this.options.challengeId = 'userProfile';
-    this.options.description = 'Now that your logged in, let\'s pull some information out of your <code>user</code> ' +
+    this.options.description = 'Now that you\'re logged in, let\'s pull some information out of your <code>user</code> ' +
         'object. Find and return the <code>user</code> object from the <code>getUser()</code> function and display ' +
         'your <code>displayName</code>, <code>id</code>, and the <code>provider</code> used to login in the "My Profile" table.<br/><br/>' +
         '<em><strong>Tip:</strong> if your running low on screen real estate you can show or hide the panes from the "HTML", "JavaScript", and "Output" buttons up top.</em><br/>' +
@@ -36,7 +36,7 @@ var SetupCtrl = function($injector, $q, $rootScope, $firebaseSimpleLogin, $inter
 
     this.options.testCases = [
         $injector.instantiate(TestCase, {
-            description: 'Ensures that the "My Profile" table has your displayName',
+            description: 'The "My Profile" table should have your displayName',
             expression: "$('#displayName').text()",
             expectedValue: promiseDisplayNameMgr.promise,
             runTest: function() {
@@ -55,7 +55,7 @@ var SetupCtrl = function($injector, $q, $rootScope, $firebaseSimpleLogin, $inter
             }
         }),
         $injector.instantiate(TestCase, {
-            description: 'Ensures that the "My Profile" table has your id',
+            description: 'The "My Profile" table should have your id',
             expression: "$('#id').text()",
             expectedValue: promiseIdMgr.promise,
             runTest: function() {
@@ -74,7 +74,7 @@ var SetupCtrl = function($injector, $q, $rootScope, $firebaseSimpleLogin, $inter
             }
         }),
         $injector.instantiate(TestCase, {
-            description: 'Ensures that the "My Profile" table has the provider used to login',
+            description: 'The "My Profile" table should have the provider used to login',
             expression: "$('#provider').text()",
             expectedValue: promiseProviderMgr.promise,
             runTest: function() {
