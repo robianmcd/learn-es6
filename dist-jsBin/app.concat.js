@@ -27186,16 +27186,16 @@ TestCase.prototype.getPrettyObjectSummary = function(obj) {
                 },
                 AngularFire: {
                     firebaseSimpleLogin: {
-                        jsBin: '',
+                        jsBin: 'qetin',
                         name: 'Firebase Simple Login'
                     },
                     userProfile: {
-                        jsBin: '',
+                        jsBin: 'mojan',
                         name: 'User Profile',
                         view: 'html,js,output'
                     },
                     firebaseService: {
-                        jsBin: '',
+                        jsBin: 'kefuh',
                         name: 'The $firebase Service'
                     }
                 }
