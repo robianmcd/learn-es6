@@ -27203,7 +27203,7 @@ TestCase.prototype.getPrettyObjectSummary = function (obj) {
             name: 'The $firebase Service'
           },
           collections: {
-            jsBin: 'zoliwiri',
+            jsBin: 'fijur',
             name: 'Collections'
           }
         }
