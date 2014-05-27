@@ -26841,8 +26841,8 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
             completedChallenge[_this.challengeId] = now;
             userChallenges.$update(completedChallenge);
 
-            leaderboardUser.$update({$priority: now});
-
+            leaderboardUser.$priority = now;
+            leaderboardUser.$save();
           }
         }
       });
@@ -27201,12 +27201,16 @@ TestCase.prototype.getPrettyObjectSummary = function (obj) {
           firebaseService: {
             jsBin: 'kefuh',
             name: 'The $firebase Service'
+          },
+          collections: {
+            jsBin: 'zoliwiri',
+            name: 'Collections'
           }
         }
       },
       order: {
         ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
-        AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService']
+        AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService', 'collections']
       },
 
       getChallenge: function (id) {

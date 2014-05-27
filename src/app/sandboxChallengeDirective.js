@@ -263,8 +263,8 @@
             completedChallenge[_this.challengeId] = now;
             userChallenges.$update(completedChallenge);
 
-            leaderboardUser.$update({$priority: now});
-
+            leaderboardUser.$priority = now;
+            leaderboardUser.$save();
           }
         }
       });

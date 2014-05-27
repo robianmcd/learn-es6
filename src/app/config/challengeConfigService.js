@@ -47,12 +47,16 @@
           firebaseService: {
             jsBin: 'kefuh',
             name: 'The $firebase Service'
+          },
+          collections: {
+            jsBin: 'zoliwiri',
+            name: 'Collections'
           }
         }
       },
       order: {
         ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
-        AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService']
+        AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService', 'collections']
       },
 
       getChallenge: function (id) {

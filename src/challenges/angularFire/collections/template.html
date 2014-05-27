@@ -1,0 +1,22 @@
+<div ng-controller="MyCtrl as ctrl">
+  <h4 class="text-center">How a programmer reads your resume</h4>
+  <table class="table">
+
+    <!--
+    TODO: add an ng-repeat to this <tr> so that each
+    element of ctrl.devResumeChecklist is assigned to item.
+
+    Note: ctrl.devResumeChecklist is an object not an array
+    so you'll need to iterate over property keys.
+    -->
+    <tr ng-repeat="(key, item) in ctrl.devResumeChecklist">
+
+      <td id="desc">{{item.description}}</td>
+
+      <td id="impt">
+        <span ng-show="item.importance >= 0">+</span>{{item.importance}}
+      </td>
+
+    </tr>
+  </table>
+</div>
