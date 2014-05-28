@@ -1,0 +1,35 @@
+<div ng-controller="MyCtrl as ctrl">
+  <h4 class="text-center">How a programmer reads your resume</h4>
+  <table class="table">
+
+    <!--
+    TODO:
+    1. Modify the ng-repeat so it uses AngularFire's
+      orderByPriority filter to convert devResumeChecklist
+      into an array and sort it by priority
+    2. Use the custom reverse filter so the the highest
+      priority items appear at the top of the list
+    3. Use Angular's limitTo filter to only show 5 items in
+      the ng-repeat
+    -->
+    <tr ng-repeat="(key, item) in ctrl.devResumeChecklist">
+      <td id="desc">{{item.description}}</td>
+
+      <td id="impt">
+        <span ng-show="item.importance >= 0">+</span>{{item.importance}}
+      </td>
+
+      <td>
+        <div ng-show="item.description">
+          <button class="btn btn-default" ng-click="ctrl.setImportance(item, item.$priority + 1)">
+            <span class="fa fa-plus"></span>
+          </button>
+          <button class="btn btn-default" ng-click="ctrl.setImportance(item, item.$priority - 1)">
+            <span class="fa fa-minus"></span>
+          </button>
+        </div>
+      </td>
+
+    </tr>
+  </table>
+</div>

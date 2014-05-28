@@ -1,0 +1,111 @@
+<!DOCTYPE html> <html ng-app="theSandboxChallenge.setup" ng-cloak ng-controller="SetupCtrl as setupCtrl"> <head> <meta charset="utf-8"/> <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> </head> <body> <div class="container"> <div sandbox-challenge options="setupCtrl.options">
+<!--↓↓↓ Make your changes BELOW here ↓↓↓-->
+
+
+<div ng-controller="MyCtrl as ctrl">
+  <h4 class="text-center">How a programmer reads your resume</h4>
+  <table class="table">
+
+    <!--
+    TODO:
+    1. Modify the ng-repeat so it uses AngularFire's
+      orderByPriority filter to convert devResumeChecklist
+      into an array and sort it by priority
+    2. Use the custom reverse filter so the the highest
+      priority items appear at the top of the list
+    3. Use Angular's limitTo filter to only show 5 items in
+      the ng-repeat
+    -->
+    <tr ng-repeat="(key, item) in ctrl.devResumeChecklist">
+      <td id="desc">{{item.description}}</td>
+
+      <td id="impt">
+        <span ng-show="item.importance >= 0">+</span>{{item.importance}}
+      </td>
+
+      <td>
+        <div ng-show="item.description">
+          <button class="btn btn-default" ng-click="ctrl.setImportance(item, item.$priority + 1)">
+            <span class="fa fa-plus"></span>
+          </button>
+          <button class="btn btn-default" ng-click="ctrl.setImportance(item, item.$priority - 1)">
+            <span class="fa fa-minus"></span>
+          </button>
+        </div>
+      </td>
+
+    </tr>
+  </table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!--↑↑↑ Make your changes ABOVE here ↑↑↑-->
+</div> </div> <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"> <link rel="stylesheet" href="http://robianmcd.github.io/the-sandbox-challenge/dist-jsBin/styles.css"/> <script src="http://static.jsbin.com/js/vendor/traceur.js"></script> <script src="http://robianmcd.github.io/the-sandbox-challenge/dist-jsBin/app.concat.js"></script> <script src="http://robianmcd.github.io/the-sandbox-challenge/dist-jsBin/challenges/angularFire/priority/setup.js"></script> </body> </html>

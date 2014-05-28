@@ -26922,6 +26922,11 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
     }
 
     var seconds = Math.floor((new Date() - date) / 1000);
+
+    if (seconds < 0) {
+      seconds = 0;
+    }
+
     var intervalType;
 
     var interval = Math.floor(seconds / 31536000);
@@ -26951,7 +26956,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
       }
     }
 
-    if (interval > 1) {
+    if (interval != 1) {
       intervalType += 's';
     }
 
@@ -27204,13 +27209,19 @@ TestCase.prototype.getPrettyObjectSummary = function (obj) {
           },
           collections: {
             jsBin: 'fijur',
-            name: 'Collections'
+            name: 'Collections',
+            views: 'html,js,output'
+          },
+          priority: {
+            jsBin: 'cobile',
+            name: '$priority',
+            views: 'html,js,output'
           }
         }
       },
       order: {
         ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
-        AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService', 'collections']
+        AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService', 'collections', 'priority']
       },
 
       getChallenge: function (id) {
