@@ -57,6 +57,9 @@ TestCase.prototype.isPassing = function () {
   if (this.expectedValue instanceof Array) {
     return this._compareArrays(this.expectedValue, actualValue);
 
+  } else if(typeof this.expectedValue === 'object') {
+    return JSON.stringify(this.expectedValue) === JSON.stringify(actualValue);
+
   } else {
     return this.expectedValue === actualValue;
   }
@@ -147,7 +150,7 @@ TestCase.prototype.getPrettyObjectSummary = function (obj) {
     }
 
     if (numProps >= maxProps) {
-      output += '  ...\n';
+      output += '  ...';
       break;
     }
 
@@ -170,5 +173,5 @@ TestCase.prototype.getPrettyObjectSummary = function (obj) {
     }
   }
 
-  return output + '}';
+  return output + '\n}';
 };

@@ -27042,6 +27042,9 @@ TestCase.prototype.isPassing = function () {
   if (this.expectedValue instanceof Array) {
     return this._compareArrays(this.expectedValue, actualValue);
 
+  } else if(typeof this.expectedValue === 'object') {
+    return JSON.stringify(this.expectedValue) === JSON.stringify(actualValue);
+
   } else {
     return this.expectedValue === actualValue;
   }
@@ -27132,7 +27135,7 @@ TestCase.prototype.getPrettyObjectSummary = function (obj) {
     }
 
     if (numProps >= maxProps) {
-      output += '  ...\n';
+      output += '  ...';
       break;
     }
 
@@ -27155,7 +27158,7 @@ TestCase.prototype.getPrettyObjectSummary = function (obj) {
     }
   }
 
-  return output + '}';
+  return output + '\n}';
 };
 (function () {
   var configApp = angular.module('theSandboxChallenge.config');
@@ -27216,12 +27219,21 @@ TestCase.prototype.getPrettyObjectSummary = function (obj) {
             jsBin: 'cobile',
             name: '$priority',
             views: 'html,js,output'
+          },
+          child: {
+            jsBin: 'nogaj',
+            name: '$child'
+          },
+          threeWayBinding: {
+            jsBin: '',
+            name: 'Three Way Binding',
+            views: 'html,js,output'
           }
         }
       },
       order: {
         ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
-        AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService', 'collections', 'priority']
+        AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService', 'collections', 'priority', 'child', 'threeWayBinding']
       },
 
       getChallenge: function (id) {

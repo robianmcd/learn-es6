@@ -57,12 +57,21 @@
             jsBin: 'cobile',
             name: '$priority',
             views: 'html,js,output'
+          },
+          child: {
+            jsBin: 'nogaj',
+            name: '$child'
+          },
+          threeWayBinding: {
+            jsBin: '',
+            name: 'Three Way Binding',
+            views: 'html,js,output'
           }
         }
       },
       order: {
         ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
-        AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService', 'collections', 'priority']
+        AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService', 'collections', 'priority', 'child', 'threeWayBinding']
       },
 
       getChallenge: function (id) {
