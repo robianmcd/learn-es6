@@ -1,4 +1,4 @@
-var MyCtrl = function ($firebase, $scope, $timeout, myFirebaseUtils) {
+var MyCtrl = function ($firebase, $scope, myFirebaseUtils) {
   //Creates a reference to the firebase database.
   this.dbRef = new Firebase(myFirebaseUtils.getBaseUrl());
   this.scientists = $firebase(this.dbRef);
