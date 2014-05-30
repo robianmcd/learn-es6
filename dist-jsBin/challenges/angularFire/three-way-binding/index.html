@@ -3,7 +3,23 @@
 
 
 <div ng-controller="MyCtrl as ctrl">
-
+  <div ng-repeat="scientist in ctrl.scientists | orderByPriority track by scientist.$id">
+    <h4>{{scientist.$id}}</h4>
+    <table class="table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+        <th>Edit</th>
+      </tr>
+      <tr ng-repeat="(key, value) in scientist">
+        <td>{{key}}</td>
+        <td width="40%">{{value}}</td>
+        <td>
+          <input class="form-control" type="text" ng-model="scientist[key]"/>
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
 
 

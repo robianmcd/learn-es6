@@ -63,9 +63,8 @@
             name: '$child'
           },
           threeWayBinding: {
-            jsBin: '',
-            name: 'Three Way Binding',
-            views: 'html,js,output'
+            jsBin: 'nozow',
+            name: 'Three Way Binding'
           }
         }
       },
