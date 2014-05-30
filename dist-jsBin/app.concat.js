@@ -27194,6 +27194,14 @@ TestCase.prototype.getPrettyObjectSummary = function (obj) {
           optionalParameters: {
             jsBin: 'befey',
             name: 'Optional Parameters'
+          },
+          classConstructors: {
+            jsBin: 'tihul',
+            name: 'Class Constructors'
+          },
+          classInheritance: {
+            jsBin: 'dodag',
+            name: 'Class Inheritance'
           }
         },
         AngularFire: {
@@ -27231,7 +27239,7 @@ TestCase.prototype.getPrettyObjectSummary = function (obj) {
         }
       },
       order: {
-        ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects'],
+        ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects', 'classConstructors', 'classInheritance'],
         AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService', 'collections', 'priority', 'child', 'threeWayBinding']
       },
 
