@@ -26677,6 +26677,9 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
             <div ng-show="ctrl.getAllTestsPassing()">\
                 <div class="alert alert-success">\
                     <strong>Nice Job!</strong> You completed the <em>&OpenCurlyDoubleQuote;{{ctrl.challenges[ctrl.challengeId].name}}&CloseCurlyDoubleQuote;</em> challenge.\
+                    <div ng-show="!ctrl.getNextChallengeId()">\
+                      This is the final challenge but if you missed any you can select a previous one from the dropdown.\
+                    </div>\
                 </div>\
                 <div class="alert alert-warning alert-dismissable" ng-show="ctrl.loginStateDetermined && !ctrl.auth.user">\
                         <strong>You are not logged in.</strong> Share you accomplishments on the leader board by logging in:\
