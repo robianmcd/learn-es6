@@ -40,6 +40,10 @@
           classInheritance: {
             jsBin: 'dodag',
             name: 'Class Inheritance'
+          },
+          fibonacciGenerator: {
+            jsBin: 'muvan',
+            name: 'Fibonacci Generator'
           }
         },
         AngularFire: {
@@ -77,7 +81,7 @@
         }
       },
       order: {
-        ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects', 'classConstructors', 'classInheritance'],
+        ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects', 'classConstructors', 'classInheritance', 'fibonacciGenerator'],
         AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService', 'collections', 'priority', 'child', 'threeWayBinding']
       },
 

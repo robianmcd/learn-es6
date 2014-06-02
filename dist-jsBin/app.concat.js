@@ -27045,6 +27045,9 @@ TestCase.prototype.isPassing = function () {
   if (this.expectedValue instanceof Array) {
     return this._compareArrays(this.expectedValue, actualValue);
 
+  } else if (this.expectedValue instanceof Set) {
+    return this.getPrettySetSummary(this.expectedValue) === this.getPrettySetSummary(actualValue);
+
   } else if(typeof this.expectedValue === 'object') {
     return JSON.stringify(this.expectedValue) === JSON.stringify(actualValue);
 
@@ -27073,6 +27076,9 @@ TestCase.prototype.getDisplayableValue = function (value, setWrapInPre) {
 
   } else if (value instanceof Array) {
     displayString = JSON.stringify(value);
+
+  } else if (value instanceof Set) {
+    displayString = this.getPrettySetSummary(value);
 
   } else if (typeof value === 'object') {
     setWrapInPre(true);
@@ -27124,6 +27130,22 @@ TestCase.prototype._compareArrays = function (array1, array2) {
     }
   }
   return true;
+};
+
+TestCase.prototype.getPrettySetSummary = function (set) {
+  var output = '';
+
+  if (!(set instanceof Set)) {
+    return '';
+  }
+
+  var setItr = set.values();
+
+  for (var elem = setItr.next(); !elem.done; elem = setItr.next()) {
+    output += elem.value + ', ';
+  }
+
+  return 'Set [' + output.substring(0, output.length - 2) + ']';
 };
 
 TestCase.prototype.getPrettyObjectSummary = function (obj) {
@@ -27205,6 +27227,10 @@ TestCase.prototype.getPrettyObjectSummary = function (obj) {
           classInheritance: {
             jsBin: 'dodag',
             name: 'Class Inheritance'
+          },
+          fibonacciGenerator: {
+            jsBin: 'muvan',
+            name: 'Fibonacci Generator'
           }
         },
         AngularFire: {
@@ -27242,7 +27268,7 @@ TestCase.prototype.getPrettyObjectSummary = function (obj) {
         }
       },
       order: {
-        ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects', 'classConstructors', 'classInheritance'],
+        ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects', 'classConstructors', 'classInheritance', 'fibonacciGenerator'],
         AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService', 'collections', 'priority', 'child', 'threeWayBinding']
       },
 
