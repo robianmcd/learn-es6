@@ -44,6 +44,10 @@
           fibonacciGenerator: {
             jsBin: 'muvan',
             name: 'Fibonacci Generator'
+          },
+          makeAPromise: {
+            jsBin: 'diluj',
+            name: 'Make a Promise'
           }
         },
         AngularFire: {
@@ -81,7 +85,7 @@
         }
       },
       order: {
-        ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects', 'classConstructors', 'classInheritance', 'fibonacciGenerator'],
+        ES6: ['blockScopeLet', 'arrowFunctions', 'forOfLoops', 'optionalParameters', 'destructuringArrays', 'destructuringSwap', 'destructuringObjects', 'classConstructors', 'classInheritance', 'fibonacciGenerator', 'makeAPromise'],
         AngularFire: ['firebaseSimpleLogin', 'userProfile', 'firebaseService', 'collections', 'priority', 'child', 'threeWayBinding']
       },
 
