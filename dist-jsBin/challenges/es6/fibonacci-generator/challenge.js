@@ -8,10 +8,10 @@ function* fibonacci() {
   }
 }
 
-//TODO: return a Set of all the fibonacci
+//TODO: return an array of all the fibonacci
 //numbers less than max.
-let getFibSet = (max) => {
-  let nums = new Set();
+let getFibonacciNums = (max) => {
+  let nums = [];
 
 
 

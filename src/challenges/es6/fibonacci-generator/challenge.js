@@ -8,10 +8,16 @@ function* fibonacci() {
   }
 }
 
-//TODO: return a Set of all the fibonacci
-//numbers less than max.
-let getFibSet = (max) => {
-  let nums = new Set();
+/*
+TODO: return an array of all the fibonacci numbers
+less than max.
+
+Note: JSBin does not support Generator.next()
+so you should iterate over the fibonacci generator
+with a for...of loop.
+ */
+let getFibonacciNums = (max) => {
+  let nums = [];
 
 
 
