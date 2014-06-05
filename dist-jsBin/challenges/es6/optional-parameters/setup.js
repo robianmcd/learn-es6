@@ -4,7 +4,7 @@ var SetupCtrl = function ($injector) {
   this.options = {};
   this.options.group = 'ES6';
   this.options.challengeId = 'optionalParameters';
-  this.options.description = 'Optinl pmrtz!@@';
+  this.options.description = 'Modify <code>foo()</code> using ES6 default parameters so that b defaults to 10 and c defaults to 100.';
 
   this.options.testCases = [
     $injector.instantiate(TestCase, {
