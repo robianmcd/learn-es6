@@ -134,7 +134,7 @@
                                             </a>\
                                             <div class="media-body">\
                                                 <h4 class="media-heading">{{userData.profile.name}}</h4>\
-                                                Score: <strong>{{ctrl.getScoreFromUserData(userData) || 0}}</strong>\
+                                                Score: <strong>{{ctrl.getScoreFromUserData(userData) * 100 || 0}}</strong>\
                                             </div>\
                                         </div>\
                                     </div>\
