@@ -374,6 +374,7 @@
             if (interval >= 1) {
               intervalType = "minute";
             } else {
+              interval = seconds;
               intervalType = "second";
             }
           }
